@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ModeToggle } from "../mode-toggle";
+import { ModeToggle } from "./mode-toggle";
 import { PandaIcon } from "./panda-icon";
+import { NavMenu } from "./nav-menu";
 
 export function NavBar() {
   return (
@@ -22,11 +23,12 @@ export function NavBar() {
               to="/real-money-calculator"
               className="font-medium flex items-center text-sm transition-colors hover:underline"
             >
-              Calculator
+              Real Money Spend Calculator
             </Link>
           </nav>
           <div className="flex items-center gap-4">
             <ModeToggle />
+            <NavMenu />
           </div>
         </div>
       </div>
