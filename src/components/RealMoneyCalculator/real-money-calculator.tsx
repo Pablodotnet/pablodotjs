@@ -49,7 +49,7 @@ export function RealMoneyCalculator() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const result = calculateTibiaGold(values);
     setCalculationResult(result);
-    setFormSubmitted(true); // Hide the form after submission
+    setFormSubmitted(true);
   };
 
   const calculateTibiaGold = (values: z.infer<typeof formSchema>) => {
@@ -78,11 +78,10 @@ export function RealMoneyCalculator() {
     };
   };
 
-  // Handle the clear button
   const handleClear = () => {
     setFormSubmitted(false);
     setCalculationResult(null);
-    form.reset(); // Reset the form to default values
+    form.reset();
   };
 
   if (formSubmitted) {

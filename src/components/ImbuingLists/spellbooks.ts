@@ -1,0 +1,32 @@
+export const spellbooks = [
+  { name: "Alchemist's Notepad", icon: "Alchemist's Notepad", imbuingSlots: 1 },
+  { name: "Arboreal Tome", icon: "Arboreal Tome", imbuingSlots: 1 },
+  { name: "Arcanomancer Folio", icon: "Arcanomancer Folio", imbuingSlots: 1 },
+  { name: "Book of Lies", icon: "Book of Lies", imbuingSlots: 1 },
+  { name: "Brain in a Jar", icon: "Brain in a Jar", imbuingSlots: 1 },
+  { name: "Cocoa Grimoire", icon: "Cocoa Grimoire", imbuingSlots: 1 },
+  { name: "Creamy Grimoire", icon: "Creamy Grimoire", imbuingSlots: 1 },
+  { name: "Eldritch Folio", icon: "Eldritch Folio", imbuingSlots: 1 },
+  { name: "Eldritch Tome", icon: "Eldritch Tome", imbuingSlots: 1 },
+  { name: "Lion Spellbook", icon: "Lion Spellbook", imbuingSlots: 1 },
+  { name: "Shoulder Plate", icon: "Shoulder Plate", imbuingSlots: 1 },
+  {
+    name: "Spellbook of Enlightenment",
+    icon: "Spellbook of Enlightenment",
+    imbuingSlots: 1,
+  },
+  {
+    name: "Spellbook of Warding",
+    icon: "Spellbook of Warding",
+    imbuingSlots: 1,
+  },
+  { name: "Spellbook", icon: "Spellbook", imbuingSlots: 1 },
+  { name: "Spirit Guide", icon: "Spirit Guide", imbuingSlots: 1 },
+  {
+    name: "Umbral Master Spellbook",
+    icon: "Umbral Master Spellbook",
+    imbuingSlots: 1,
+  },
+  { name: "Umbral Spellbook", icon: "Umbral Spellbook", imbuingSlots: 1 },
+  { name: "Wooden Spellbook", icon: "Wooden Spellbook", imbuingSlots: 1 },
+];
