@@ -1,9 +1,26 @@
+import { RealMoneyCalculator } from "@/components/RealMoneyCalculator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 const RealMoneyPage = () => {
   return (
-    <div>
-      <h1>Real Money Calculator</h1>
-      <p>Welcome to the Real Money Calculator!</p>
-    </div>
+    <Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Real Money Spend Calculator</CardTitle>
+        <CardDescription>
+          Here you can calculate how much real money and Tibia Coins you would
+          spend to get certain quantity of Tibia Gold
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <RealMoneyCalculator />
+      </CardContent>
+    </Card>
   );
 };
 
