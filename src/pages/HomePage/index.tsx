@@ -1,8 +1,9 @@
+import { PagesCard } from "@/components/PagesCard";
+
 const HomePage = () => {
   return (
-    <div>
-      <h1>Home Page</h1>
-      <p>Welcome to the Home page!</p>
+    <div className="px-8">
+      <PagesCard />
     </div>
   );
 };
