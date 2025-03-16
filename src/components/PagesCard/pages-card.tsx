@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import goldcoinGif from "@/assets/goldcoin.gif";
 
 type PageListItem = {
   title: string;
@@ -20,7 +21,7 @@ export function PagesCard() {
       title: "Real Money Calculator",
       url: "/real-money-calculator",
       description: "Calculate how much real money will cost your Tibia gold.",
-      icon: "/src/assets/goldcoin.gif",
+      icon: goldcoinGif,
     },
   ];
   return (
