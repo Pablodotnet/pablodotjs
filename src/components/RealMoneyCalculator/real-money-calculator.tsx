@@ -41,7 +41,7 @@ export function RealMoneyCalculator() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       priceFor250Tc: "200",
-      tibiaGoldFor250Tc: "10000000",
+      tibiaGoldFor250Tc: "10kk",
       goldToConvert: "",
     },
   });
@@ -54,28 +54,36 @@ export function RealMoneyCalculator() {
 
   const calculateTibiaGold = (values: z.infer<typeof formSchema>) => {
     const priceFor250 = Number(values.priceFor250Tc);
-    const tibiaGoldFor250 = Number(values.tibiaGoldFor250Tc);
+    const tibiaGoldFor250 = parseKkString(values.tibiaGoldFor250Tc);
     const tibiaCoinsQuantity = 250;
+    const goldToConvertInKks = values.goldToConvert;
+    const goldToConvert = parseKkString(values.goldToConvert);
 
     const tibiaCoinsCalculation =
-      (Number(values.goldToConvert) / tibiaGoldFor250) * tibiaCoinsQuantity;
+      (goldToConvert / tibiaGoldFor250) * tibiaCoinsQuantity;
 
     const realMoneyCalculation =
       (tibiaCoinsCalculation / tibiaCoinsQuantity) * priceFor250;
 
-    const transformToKks = (number: number): string => {
-      if (number >= 1000000) {
-        const formattedNumber = (number / 1000000).toFixed(2);
-        return `${parseFloat(formattedNumber)}kk`;
-      }
-      return number.toString();
-    };
-
     return {
-      tibiaCoins: tibiaCoinsCalculation.toFixed(2),
-      realMoney: realMoneyCalculation.toFixed(2),
-      goldToConvert: transformToKks(Number(values.goldToConvert)),
+      tibiaCoins: tibiaCoinsCalculation.toLocaleString(),
+      realMoney: realMoneyCalculation.toLocaleString(),
+      goldToConvert: goldToConvertInKks,
     };
+  };
+
+  const parseKkString = (stringWithKk: string): number => {
+    const match = stringWithKk.match(/^(\d+)(k+)?$/i);
+
+    if (!match) {
+      throw new Error("Invalid string format");
+    }
+
+    const number = parseInt(match[1], 10);
+    const kCount = match[2] ? match[2].length : 0;
+    const multiplier = Math.pow(1000, kCount);
+
+    return number * multiplier;
   };
 
   const handleClear = () => {
@@ -127,11 +135,11 @@ export function RealMoneyCalculator() {
             <FormItem>
               <FormLabel>Tibia Gold for 250 Tibia Coins</FormLabel>
               <FormControl>
-                <Input placeholder="10000000" {...field} />
+                <Input placeholder="10kk" {...field} />
               </FormControl>
               <FormDescription>
-                The amount of Tibia Gold for 250 Tibia Coins, default is
-                10,000,000 gold.
+                The amount of Tibia Gold for 250 Tibia Coins, default is 10kk
+                gold.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -147,7 +155,8 @@ export function RealMoneyCalculator() {
                 <Input placeholder="Enter amount" {...field} />
               </FormControl>
               <FormDescription>
-                Enter the amount of gold you want to convert.
+                Enter the amount of gold you want to convert, with format
+                "10kk", for example.
               </FormDescription>
               <FormMessage />
             </FormItem>
