@@ -29,18 +29,13 @@ export const ImbuingChecker = () => {
 
   const handleSelectItem = (item: string) => {
     setSelectedItem(item);
+    setSelectedSearch({ type: selectedItemType, item });
   };
 
   const handleCancel = () => {
     setSelectedItemType(null);
     setSelectedItem(null);
     setSelectedSearch(null);
-  };
-
-  const handleCheck = () => {
-    if (selectedItem) {
-      setSelectedSearch({ type: selectedItemType, item: selectedItem });
-    }
   };
 
   return (
@@ -92,10 +87,7 @@ export const ImbuingChecker = () => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline" onClick={handleCancel}>
-          Cancel
-        </Button>
-        <Button onClick={handleCheck} disabled={!selectedItem}>
-          Check
+          Clear
         </Button>
       </CardFooter>
     </>

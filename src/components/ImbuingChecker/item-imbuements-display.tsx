@@ -27,7 +27,7 @@ const ItemImbuementsDisplay: React.FC<ItemImbuementsDisplayProps> = ({
         <div>
           {availableImbuementsForItem.map(
             (imbuement: keyof typeof imbuements) => (
-              <Card key={imbuement} className="px-4 mb-4">
+              <Card key={imbuement} className="px-4 mb-4 py-2">
                 <div className="w-full flex items-center">
                   <img
                     src={getImbuementIcon(imbuements[imbuement].icon)}
