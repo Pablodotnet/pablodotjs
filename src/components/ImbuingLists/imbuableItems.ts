@@ -12,18 +12,68 @@ import { spellbooks } from "./spellbooks";
 import { swords } from "./swords";
 import { wands } from "./wands";
 
-export const imbuableItems = {
-  armors,
-  axes,
-  backpacks,
-  boots,
-  bows,
-  clubs,
-  crossbows,
-  helmets,
-  rods,
-  shields,
-  spellbooks,
-  swords,
-  wands,
+export type ImbuableItem = {
+  name: string;
+  icon: string;
+  imbuingSlots: number;
+};
+
+export type ImbuablesListSection = {
+  displayName: string;
+  items: ImbuableItem[];
+};
+
+export const imbuableItems: { [key: string]: ImbuablesListSection } = {
+  armors: {
+    displayName: "Armors",
+    items: armors,
+  },
+  axes: {
+    displayName: "Axes",
+    items: axes,
+  },
+  backpacks: {
+    displayName: "Backpacks",
+    items: backpacks,
+  },
+  boots: {
+    displayName: "Boots",
+    items: boots,
+  },
+  bows: {
+    displayName: "Bows",
+    items: bows,
+  },
+  clubs: {
+    displayName: "Clubs",
+    items: clubs,
+  },
+  crossbows: {
+    displayName: "Crossbows",
+    items: crossbows,
+  },
+  helmets: {
+    displayName: "Helmets",
+    items: helmets,
+  },
+  rods: {
+    displayName: "Rods",
+    items: rods,
+  },
+  shields: {
+    displayName: "Shields",
+    items: shields,
+  },
+  spellbooks: {
+    displayName: "Spellbooks",
+    items: spellbooks,
+  },
+  swords: {
+    displayName: "Swords",
+    items: swords,
+  },
+  wands: {
+    displayName: "Wands",
+    items: wands,
+  },
 };

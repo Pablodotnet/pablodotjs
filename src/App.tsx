@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // Pages
 import HomePage from "./pages/HomePage";
 import RealMoneyPage from "./pages/RealMoneyPage";
+import ImbuingsPage from "./pages/ImbuingsPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/real-money-calculator" element={<RealMoneyPage />} />
+            <Route path="/imbuings" element={<ImbuingsPage />} />
           </Routes>
         </div>
       </Router>

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import goldcoinGif from "@/assets/goldcoin.gif";
+import imbuingshrineGif from "@/assets/imbuingshrine.gif";
 
 type PageListItem = {
   title: string;
@@ -23,6 +24,12 @@ export function PagesCard() {
       description: "Calculate how much real money will cost your Tibia gold.",
       icon: goldcoinGif,
     },
+    {
+      title: "Imbuing System",
+      url: "/imbuings",
+      description: "What imbuings can you put on your items?",
+      icon: imbuingshrineGif,
+    },
   ];
   return (
     <Card>
@@ -34,9 +41,9 @@ export function PagesCard() {
       </CardHeader>
       <CardContent>
         {pagesList.map((page: PageListItem) => (
-          <Card key={page.url} className="px-4">
+          <Card key={page.url} className="px-4 mb-4">
             <Link to={page.url} className="w-full flex items-center">
-              <img src={page.icon} alt="icon" className="w-6 h-6 mr-4" />
+              <img src={page.icon} alt="icon" className="w-10 h-10 mr-4" />
               <div>
                 <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
                   {page.title}
