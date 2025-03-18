@@ -2,6 +2,7 @@ import React from "react";
 import { imbuements, imbuingsAvailableByType } from "./imbuements";
 import { Card } from "@/components/ui/card";
 import { getImbuementIcon } from "@/helpers";
+import { Label } from "@/components/ui/label";
 
 type ItemType = keyof typeof imbuingsAvailableByType;
 
@@ -22,7 +23,7 @@ const ItemImbuementsDisplay: React.FC<ItemImbuementsDisplayProps> = ({
 
   return selectedSearch ? (
     <>
-      <h3>You can imbue:</h3>
+      <Label>You can imbue:</Label>
       {availableImbuementsForItem && availableImbuementsForItem.length > 0 && (
         <div>
           {availableImbuementsForItem.map(
