@@ -3,30 +3,36 @@ import { VocationsIcons } from "@/helpers";
 import { Link } from "react-router-dom";
 
 type VocationsListItem = {
-  title: string;
+  id: string;
+  name: string;
   icon: string;
 };
 
 export const HuntingSpotsCard = () => {
   const vocations: VocationsListItem[] = [
     {
-      title: "Druid",
+      id: "druid",
+      name: "Druid",
       icon: VocationsIcons.druidGif,
     },
     {
-      title: "Knight",
+      id: "knight",
+      name: "Knight",
       icon: VocationsIcons.knightGif,
     },
     {
-      title: "Monk",
+      id: "monk",
+      name: "Monk",
       icon: VocationsIcons.monkGif,
     },
     {
-      title: "Paladin",
+      id: "paladin",
+      name: "Paladin",
       icon: VocationsIcons.paladinGif,
     },
     {
-      title: "Sorcerer",
+      id: "sorcerer",
+      name: "Sorcerer",
       icon: VocationsIcons.sorcererGif,
     },
   ];
@@ -34,15 +40,18 @@ export const HuntingSpotsCard = () => {
     <>
       <CardContent>
         {vocations.map((vocation: VocationsListItem) => (
-          <Card key={vocation.title} className="px-4 mb-4">
-            <div className="w-full flex items-center">
+          <Card key={vocation.id} className="px-4 mb-4">
+            <Link
+              to={`/hunting-spots/${vocation.id}`}
+              className="w-full flex items-center"
+            >
               <img src={vocation.icon} alt="icon" className="w-10 h-10 mr-4" />
               <div>
                 <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                  {vocation.title}
+                  {vocation.name}
                 </h4>
               </div>
-            </div>
+            </Link>
           </Card>
         ))}
       </CardContent>

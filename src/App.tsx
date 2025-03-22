@@ -1,12 +1,13 @@
 import { ThemeProvider } from "@/components/theme-provider";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "@/components/NavBar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Pages
-import HomePage from "./pages/HomePage";
-import RealMoneyPage from "./pages/RealMoneyPage";
-import ImbuingsPage from "./pages/ImbuingsPage";
-import HuntingSpotsPage from "./pages/HuntingSpotsPage";
+import HomePage from "@/pages/HomePage";
+import RealMoneyPage from "@/pages/RealMoneyPage";
+import ImbuingsPage from "@/pages/ImbuingsPage";
+import HuntingSpotsPage from "@/pages/HuntingSpotsPage";
+import VocationHuntSpotsPage from "@/pages/VocationHuntSpotsPage";
 
 function App() {
   return (
@@ -19,6 +20,10 @@ function App() {
             <Route path="/real-money-calculator" element={<RealMoneyPage />} />
             <Route path="/imbuings" element={<ImbuingsPage />} />
             <Route path="/hunting-spots" element={<HuntingSpotsPage />} />
+            <Route
+              path="/hunting-spots/:vocationId"
+              element={<VocationHuntSpotsPage />}
+            />
           </Routes>
         </div>
       </Router>
