@@ -1,4 +1,4 @@
-import { imbuableItems } from "@/components/ImbuingLists";
+import { imbuableItems } from "@/helpers/ImbuingLists";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
