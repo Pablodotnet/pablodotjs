@@ -6,8 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import goldcoinGif from "@/assets/goldcoin.gif";
-import imbuingshrineGif from "@/assets/imbuingshrine.gif";
+import { PagesIcons } from "./pages-icons";
 
 type PageListItem = {
   title: string;
@@ -22,13 +21,20 @@ export function PagesCard() {
       title: "Real Money Calculator",
       url: "/real-money-calculator",
       description: "Calculate how much real money will cost your Tibia gold.",
-      icon: goldcoinGif,
+      icon: PagesIcons.goldcoinGif,
     },
     {
       title: "Imbuing System",
       url: "/imbuings",
       description: "What imbuings can you put on your items?",
-      icon: imbuingshrineGif,
+      icon: PagesIcons.imbuingshrineGif,
+    },
+    {
+      title: "Hunting Spots",
+      url: "/hunting-spots",
+      description:
+        "Find the best hunting spots for your level and which set to use.",
+      icon: PagesIcons.guzzlemawGif,
     },
   ];
   return (
