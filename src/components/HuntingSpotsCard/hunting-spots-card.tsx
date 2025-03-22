@@ -1,41 +1,8 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { VocationsIcons } from "@/helpers";
+import { vocations, VocationsListItem } from "@/helpers";
 import { Link } from "react-router-dom";
 
-type VocationsListItem = {
-  id: string;
-  name: string;
-  icon: string;
-};
-
 export const HuntingSpotsCard = () => {
-  const vocations: VocationsListItem[] = [
-    {
-      id: "druid",
-      name: "Druid",
-      icon: VocationsIcons.druidGif,
-    },
-    {
-      id: "knight",
-      name: "Knight",
-      icon: VocationsIcons.knightGif,
-    },
-    {
-      id: "monk",
-      name: "Monk",
-      icon: VocationsIcons.monkGif,
-    },
-    {
-      id: "paladin",
-      name: "Paladin",
-      icon: VocationsIcons.paladinGif,
-    },
-    {
-      id: "sorcerer",
-      name: "Sorcerer",
-      icon: VocationsIcons.sorcererGif,
-    },
-  ];
   return (
     <>
       <CardContent>
