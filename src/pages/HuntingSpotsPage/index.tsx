@@ -1,3 +1,4 @@
+import { HuntingSpotsCard } from "@/components/HuntingSpotsCard";
 import {
   Card,
   CardDescription,
@@ -17,6 +18,7 @@ const HuntingSpotsPage = () => {
           use there and which imbuements to use.
         </CardDescription>
       </CardHeader>
+      <HuntingSpotsCard />
     </Card>
   );
 };

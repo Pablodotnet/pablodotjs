@@ -18,7 +18,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/real-money-calculator" element={<RealMoneyPage />} />
             <Route path="/imbuings" element={<ImbuingsPage />} />
-            <Route path="/huntingspots" element={<HuntingSpotsPage />} />
+            <Route path="/hunting-spots" element={<HuntingSpotsPage />} />
           </Routes>
         </div>
       </Router>
