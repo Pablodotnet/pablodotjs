@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { PagesIcons } from "./pages-icons";
+import { PagesIcons } from "@/helpers/pages-icons";
 
 type PageListItem = {
   title: string;
