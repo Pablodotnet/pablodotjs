@@ -3,12 +3,12 @@ import moohtantHornGif from "@/assets/imb-items-icons/axe/moohtant_horn.gif";
 import orcToothGif from "@/assets/imb-items-icons/axe/orc_tooth.gif";
 
 import fairyWingsGif from "@/assets/imb-items-icons/capacityIncrease/fairy_wings.gif";
-import goosebumpLeatherGif from "@assets/imb-items-icons/capacityIncrease/goosebump_leather.gif";
+import goosebumpLeatherGif from "@/assets/imb-items-icons/capacityIncrease/goosebump_leather.gif";
 import littleBowlOfMyrrhGif from "@/assets/imb-items-icons/capacityIncrease/little_bowl_of_myrrh.gif";
 
 import cyclopsToeGif from "@/assets/imb-items-icons/club/cyclops_toe.gif";
-import ogreNoseRing from "@/assets/imb-items-icons/club/ogre_nose_ring.gif";
-import warmastersWristguardGif from "@/assets/imb-items-icons/club/warmasters_wristguard.gif";
+import ogreNoseRingGif from "@/assets/imb-items-icons/club/ogre_nose_ring.gif";
+import warmastersWristguardGif from "@/assets/imb-items-icons/club/warmasters_wristguards.gif";
 
 import protectiveCharmGif from "@/assets/imb-items-icons/criticalDamage/protective_charm.gif";
 import sabretoothGif from "@/assets/imb-items-icons/criticalDamage/sabretooth.gif";
@@ -19,8 +19,8 @@ import petrifiedScreamGif from "@/assets/imb-items-icons/deathDamage/petrified_s
 import pileOfGraveEarthGif from "@/assets/imb-items-icons/deathDamage/pile_of_grave_earth.gif";
 
 import flaskOfEmbalmingFluidGif from "@/assets/imb-items-icons/deathProtection/flask_of_embalming_fluid.gif";
-import gloomWolfFur from "@/assets/imb-items-icons/deathProtection/gloom_wolf_fur.gif";
-import mysticalHourglass from "@/assets/imb-items-icons/deathProtection/mystical_hourglass.gif";
+import gloomWolfFurGif from "@/assets/imb-items-icons/deathProtection/gloom_wolf_fur.gif";
+import mysticalHourglassGif from "@/assets/imb-items-icons/deathProtection/mystical_hourglass.gif";
 
 import elvenHoofGif from "@/assets/imb-items-icons/distance/elven_hoof.gif";
 import elvenScoutingGlassGif from "@/assets/imb-items-icons/distance/elven_scouting_glass.gif";
@@ -34,7 +34,7 @@ import brimstoneFangsGif from "@/assets/imb-items-icons/earthProtection/brimston
 import pieceOfSwamplingWoodGif from "@/assets/imb-items-icons/earthProtection/piece_of_swampling_wood.gif";
 import snakeSkinGif from "@/assets/imb-items-icons/earthProtection/snake_skin.gif";
 
-import energyVein from "@/assets/imb-items-icons/energyDamage/energy_vein.gif";
+import energyVeinGif from "@/assets/imb-items-icons/energyDamage/energy_vein.gif";
 import peacockFeatherFanGif from "@/assets/imb-items-icons/energyDamage/peacock_feather_fan.gif";
 import rorcFeatherGif from "@/assets/imb-items-icons/energyDamage/rorc_feather.gif";
 
@@ -70,7 +70,7 @@ import brokenShamanicStaffGif from "@/assets/imb-items-icons/magicLevel/broken_s
 import elvishTalismanGif from "@/assets/imb-items-icons/magicLevel/elvish_talisman.gif";
 import strandOfMedusaHairGif from "@/assets/imb-items-icons/magicLevel/strand_of_medusa_hair.gif";
 
-import robeBeltGif from "@/assets/imb-items-icons/manaLeech/robe_belt.gif";
+import ropeBeltGif from "@/assets/imb-items-icons/manaLeech/rope_belt.gif";
 import silencerClawsGif from "@/assets/imb-items-icons/manaLeech/silencer_claws.gif";
 import someGrimeleechWingsGif from "@/assets/imb-items-icons/manaLeech/some_grimeleech_wings.gif";
 
@@ -82,7 +82,7 @@ import brimsontShellGif from "@/assets/imb-items-icons/shielding/brimstone_shell
 import frazzleSkinGif from "@/assets/imb-items-icons/shielding/frazzle_skin.gif";
 import pieceOfScarabShellGif from "@/assets/imb-items-icons/shielding/piece_of_scarab_shell.gif";
 
-import lionsManeGif from "@/assets/imb-items-icons/sword/lions_mane.gif";
+import lionsManeGif from "@/assets/imb-items-icons/sword/lion_s_mane.gif";
 import moohTahShellGif from "@/assets/imb-items-icons/sword/mooh_tah_shell.gif";
 import warCrystalGif from "@/assets/imb-items-icons/sword/war_crystal.gif";
 
@@ -90,7 +90,7 @@ import compassGif from "@/assets/imb-items-icons/velocity/compass.gif";
 import damselflyWingGif from "@/assets/imb-items-icons/velocity/damselfly_wing.gif";
 import waspoidWingGif from "@/assets/imb-items-icons/velocity/waspoid_wing.gif";
 
-export const imbumentsItemsIcons = {
+export const imbuementsItemsIcons = {
   axe: {
     battleStoneGif,
     moohtantHornGif,
@@ -103,7 +103,7 @@ export const imbumentsItemsIcons = {
   },
   club: {
     cyclopsToeGif,
-    ogreNoseRing,
+    ogreNoseRingGif,
     warmastersWristguardGif,
   },
   criticalDamage: {
@@ -118,8 +118,8 @@ export const imbumentsItemsIcons = {
   },
   deathProtection: {
     flaskOfEmbalmingFluidGif,
-    gloomWolfFur,
-    mysticalHourglass,
+    gloomWolfFurGif,
+    mysticalHourglassGif,
   },
   distance: {
     elvenHoofGif,
@@ -137,7 +137,7 @@ export const imbumentsItemsIcons = {
     snakeSkinGif,
   },
   energyDamage: {
-    energyVein,
+    energyVeinGif,
     peacockFeatherFanGif,
     rorcFeatherGif,
   },
@@ -182,7 +182,7 @@ export const imbumentsItemsIcons = {
     strandOfMedusaHairGif,
   },
   manaLeech: {
-    robeBeltGif,
+    ropeBeltGif,
     silencerClawsGif,
     someGrimeleechWingsGif,
   },
