@@ -27,4 +27,10 @@ export const pagesList: PageListItem[] = [
       "Find the best hunting spots for your level and which set to use.",
     icon: PagesIcons.guzzlemawGif,
   },
+  {
+    title: "Exaltation/Forge System",
+    url: "/exaltation",
+    description: "Learn how exaltation works and how to use it.",
+    icon: PagesIcons.forgeGif,
+  },
 ];
