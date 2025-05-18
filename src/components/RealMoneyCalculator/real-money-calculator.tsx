@@ -24,8 +24,8 @@ const formSchema = z.object({
   priceFor250Tc: z.string().min(2, {
     message: "Price for 250 Tibia Coins must be at least 2 characters.",
   }),
-  tibiaGoldFor250Tc: z.string().min(2, {
-    message: "Tibia gold for 250 Tibia Coins must be at least 2 characters.",
+  tibiaGoldForOneTc: z.string().min(2, {
+    message: "Tibia gold for one Tibia Coin must be at least 2 characters.",
   }),
   goldToConvert: z.string().min(2, {
     message: "Gold to convert must be at least 2 characters.",
@@ -41,7 +41,7 @@ export function RealMoneyCalculator() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       priceFor250Tc: "200",
-      tibiaGoldFor250Tc: "10kk",
+      tibiaGoldForOneTc: "40k",
       goldToConvert: "",
     },
   });
@@ -54,8 +54,9 @@ export function RealMoneyCalculator() {
 
   const calculateTibiaGold = (values: z.infer<typeof formSchema>) => {
     const priceFor250 = Number(values.priceFor250Tc);
-    const tibiaGoldFor250 = parseKkString(values.tibiaGoldFor250Tc);
     const tibiaCoinsQuantity = 250;
+    const tibiaGoldFor250 =
+      parseKkString(values.tibiaGoldForOneTc) * tibiaCoinsQuantity;
     const goldToConvertInKks = values.goldToConvert;
     const goldToConvert = parseKkString(values.goldToConvert);
 
@@ -130,7 +131,7 @@ export function RealMoneyCalculator() {
         />
         <FormField
           control={form.control}
-          name="tibiaGoldFor250Tc"
+          name="tibiaGoldForOneTc"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tibia Gold for 250 Tibia Coins</FormLabel>
