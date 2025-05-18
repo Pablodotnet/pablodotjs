@@ -22,13 +22,13 @@ type CalculationResult = {
 
 const formSchema = z.object({
   priceFor250Tc: z.string().min(2, {
-    message: "Price for 250 Tibia Coins must be at least 2 characters.",
+    message: 'Price for 250 Tibia Coins must be at least 2 characters.',
   }),
-  tibiaGoldFor250Tc: z.string().min(2, {
-    message: "Tibia gold for 250 Tibia Coins must be at least 2 characters.",
+  tibiaGoldForOneTc: z.string().min(2, {
+    message: 'Tibia gold for 250 Tibia Coins must be at least 2 characters.',
   }),
   goldToConvert: z.string().min(2, {
-    message: "Gold to convert must be at least 2 characters.",
+    message: 'Gold to convert must be at least 2 characters.',
   }),
 });
 
@@ -40,9 +40,9 @@ export function RealMoneyCalculator() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      priceFor250Tc: "200",
-      tibiaGoldFor250Tc: "10kk",
-      goldToConvert: "",
+      priceFor250Tc: '215',
+      tibiaGoldForOneTc: '40,000',
+      goldToConvert: '',
     },
   });
 
@@ -54,13 +54,13 @@ export function RealMoneyCalculator() {
 
   const calculateTibiaGold = (values: z.infer<typeof formSchema>) => {
     const priceFor250 = Number(values.priceFor250Tc);
-    const tibiaGoldFor250 = parseKkString(values.tibiaGoldFor250Tc);
+    const tibiaGoldForOneTc = Number(values.tibiaGoldForOneTc);
     const tibiaCoinsQuantity = 250;
     const goldToConvertInKks = values.goldToConvert;
     const goldToConvert = parseKkString(values.goldToConvert);
 
     const tibiaCoinsCalculation =
-      (goldToConvert / tibiaGoldFor250) * tibiaCoinsQuantity;
+      (goldToConvert / (tibiaGoldForOneTc*250)) * tibiaCoinsQuantity;
 
     const realMoneyCalculation =
       (tibiaCoinsCalculation / tibiaCoinsQuantity) * priceFor250;
@@ -95,12 +95,12 @@ export function RealMoneyCalculator() {
   if (formSubmitted) {
     return (
       <div>
-        <p className="mb-2">
+        <p className='mb-2'>
           <strong>
             To get {calculationResult?.goldToConvert} gold you would need:
           </strong>
         </p>
-        <p className="mb-4">
+        <p className='mb-4'>
           Tibia Coins: {calculationResult?.tibiaCoins} <br />
           Real Money: ${calculationResult?.realMoney}
         </p>
@@ -111,15 +111,15 @@ export function RealMoneyCalculator() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         <FormField
           control={form.control}
-          name="priceFor250Tc"
+          name='priceFor250Tc'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Price for 250 Tibia Coins</FormLabel>
               <FormControl>
-                <Input placeholder="200" {...field} />
+                <Input placeholder='200' {...field} />
               </FormControl>
               <FormDescription>
                 The price in real money, default is $200 pesos MXN.
@@ -130,16 +130,15 @@ export function RealMoneyCalculator() {
         />
         <FormField
           control={form.control}
-          name="tibiaGoldFor250Tc"
+          name='tibiaGoldForOneTc'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tibia Gold for 250 Tibia Coins</FormLabel>
+              <FormLabel>Tibia Gold for ONE Tibia Coin</FormLabel>
               <FormControl>
-                <Input placeholder="10kk" {...field} />
+                <Input placeholder='40k' {...field} />
               </FormControl>
               <FormDescription>
-                The amount of Tibia Gold for 250 Tibia Coins, default is 10kk
-                gold.
+                The amount of Tibia Gold for one Tibia Coin default is 40k.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -147,12 +146,12 @@ export function RealMoneyCalculator() {
         />
         <FormField
           control={form.control}
-          name="goldToConvert"
+          name='goldToConvert'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Gold to Convert</FormLabel>
               <FormControl>
-                <Input placeholder="Enter amount" {...field} />
+                <Input placeholder='Enter amount' {...field} />
               </FormControl>
               <FormDescription>
                 Enter the amount of gold you want to convert, with format
@@ -162,9 +161,9 @@ export function RealMoneyCalculator() {
             </FormItem>
           )}
         />
-        <div className="space-x-4">
-          <Button type="submit">Calculate</Button>
-          <Button type="button" onClick={handleClear} variant="outline">
+        <div className='space-x-4'>
+          <Button type='submit'>Calculate</Button>
+          <Button type='button' onClick={handleClear} variant='outline'>
             Clear
           </Button>
         </div>
