@@ -134,13 +134,12 @@ export function RealMoneyCalculator() {
           name="tibiaGoldForOneTc"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tibia Gold for 250 Tibia Coins</FormLabel>
+              <FormLabel>Tibia Gold for ONE Tibia Coin</FormLabel>
               <FormControl>
                 <Input placeholder="10kk" {...field} />
               </FormControl>
               <FormDescription>
-                The amount of Tibia Gold for 250 Tibia Coins, default is 10kk
-                gold.
+                The amount of Tibia Gold for ONE Tibia Coin, default is 40k gold.
               </FormDescription>
               <FormMessage />
             </FormItem>
