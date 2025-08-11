@@ -25,7 +25,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export const LoginForm = () => {
   const dispatch = useAppDispatch();
-  const { status, errorMessage } = useAppSelector((state: RootState) => state.auth);
+  const { status } = useAppSelector((state: RootState) => state.auth);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
