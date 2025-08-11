@@ -9,28 +9,34 @@ export type PageListItem = {
 
 export const pagesList: PageListItem[] = [
   {
-    title: "Real Money Calculator",
-    url: "/real-money-calculator",
-    description: "Calculate how much real money will cost your Tibia gold.",
+    title: 'Real Money Calculator',
+    url: '/real-money-calculator',
+    description: 'Calculate how much real money will cost your Tibia gold.',
     icon: PagesIcons.goldcoinGif,
   },
   {
-    title: "Imbuing System",
-    url: "/imbuings",
-    description: "What imbuings can you put on your items?",
+    title: 'Imbuing System',
+    url: '/imbuings',
+    description: 'What imbuings can you put on your items?',
     icon: PagesIcons.imbuingshrineGif,
   },
   {
-    title: "Hunting Spots",
-    url: "/hunting-spots",
+    title: 'Hunting Spots',
+    url: '/hunting-spots',
     description:
-      "Find the best hunting spots for your level and which set to use.",
+      'Find the best hunting spots for your level and which set to use.',
     icon: PagesIcons.guzzlemawGif,
   },
   {
-    title: "Exaltation/Forge System",
-    url: "/exaltation",
-    description: "Learn how exaltation works and how to use it.",
+    title: 'Exaltation/Forge System',
+    url: '/exaltation',
+    description: 'Learn how exaltation works and how to use it.',
     icon: PagesIcons.forgeGif,
+  },
+  {
+    title: 'Runna Pace Converter',
+    url: '/runna-pace-converter',
+    description: 'How much speed to set in Life Fitness running machine to match Runna pace.',
+    icon: PagesIcons.crystalWolfGif,
   },
 ];
