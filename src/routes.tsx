@@ -5,12 +5,14 @@ import HuntingSpotsPage from '@/pages/HuntingSpotsPage';
 import ImbuingsPage from '@/pages/ImbuingsPage';
 import RealMoneyPage from '@/pages/RealMoneyPage';
 import VocationHuntSpotsPage from '@/pages/VocationHuntSpotsPage';
+import CoinsToMoneyPage from '@/pages/CoinsToMoneyPage';
 
 const AppRouting = () => {
   return (
     <Routes>
       <Route path='/' element={<HomePage />} />
       <Route path='/real-money-calculator' element={<RealMoneyPage />} />
+      <Route path='/coins-to-money' element={<CoinsToMoneyPage />} />
       <Route path='/imbuings' element={<ImbuingsPage />} />
       <Route path='/hunting-spots' element={<HuntingSpotsPage />} />
       <Route

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { parseKkString } from '@/helpers';
 
 type CalculationResult = {
   tibiaCoins: string;
@@ -71,20 +72,6 @@ export function RealMoneyCalculator() {
       realMoney: realMoneyCalculation.toLocaleString(),
       goldToConvert: goldToConvertInKks,
     };
-  };
-
-  const parseKkString = (stringWithKk: string): number => {
-    const match = stringWithKk.match(/^([\d.]+)(k+)?$/i);
-
-    if (!match) {
-      throw new Error("Invalid string format");
-    }
-
-    const number = parseFloat(match[1]);
-    const kCount = match[2] ? match[2].length : 0;
-    const multiplier = Math.pow(1000, kCount);
-
-    return number * multiplier;
   };
 
   const handleClear = () => {

@@ -15,6 +15,12 @@ export const pagesList: PageListItem[] = [
     icon: PagesIcons.goldcoinGif,
   },
   {
+    title: 'Tibia Coins to Real Money Calculator',
+    url: '/coins-to-money',
+    description: 'Calculate how much real money will cost your Tibia Coins.',
+    icon: PagesIcons.crystalWolfGif,
+  },
+  {
     title: 'Imbuing System',
     url: '/imbuings',
     description: 'What imbuings can you put on your items?',
