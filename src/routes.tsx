@@ -5,7 +5,6 @@ import HuntingSpotsPage from '@/pages/HuntingSpotsPage';
 import ImbuingsPage from '@/pages/ImbuingsPage';
 import RealMoneyPage from '@/pages/RealMoneyPage';
 import VocationHuntSpotsPage from '@/pages/VocationHuntSpotsPage';
-import RunnaPaceConverterPage from '@/pages/RunnaPaceConverterPage';
 
 const AppRouting = () => {
   return (
@@ -19,7 +18,6 @@ const AppRouting = () => {
         element={<VocationHuntSpotsPage />}
       />
       <Route path='/exaltation' element={<ExaltationPage />}></Route>
-      <Route path='/runna-pace-converter' element={<RunnaPaceConverterPage />}></Route>
       <Route path='/*' element={<Navigate to='/auth/login' />} />
     </Routes>
   );

@@ -33,10 +33,4 @@ export const pagesList: PageListItem[] = [
     description: 'Learn how exaltation works and how to use it.',
     icon: PagesIcons.forgeGif,
   },
-  {
-    title: 'Runna Pace Converter',
-    url: '/runna-pace-converter',
-    description: 'How much speed to set in Life Fitness running machine to match Runna pace.',
-    icon: PagesIcons.crystalWolfGif,
-  },
 ];
