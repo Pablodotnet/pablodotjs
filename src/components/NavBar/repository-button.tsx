@@ -5,6 +5,7 @@ export function RepositoryButton() {
 
   return (
     <Button
+      className="cursor-pointer"
       variant="outline"
       size="icon"
       onClick={() => window.open(githubRepoUrl, "_blank")} // Redirect to GitHub on click

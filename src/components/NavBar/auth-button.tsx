@@ -10,6 +10,7 @@ export function AuthButton() {
 
   return (
     <Button
+      className="cursor-pointer"
       variant='outline'
       size='icon'
       onClick={() => navigate('/auth')}
