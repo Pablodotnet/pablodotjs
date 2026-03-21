@@ -1,5 +1,7 @@
+import { ExaltationForgeSimulator } from "@/components/ExaltationForgeSimulator";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -7,16 +9,18 @@ import {
 
 const ExaltationPage = () => {
   return (
-    <Card className="w-[450px]">
+    <Card className="max-w-4xl w-full bg-white dark:bg-card">
       <CardHeader>
-        <CardTitle>
-          Where can I hunt at certain level? What set should I use?
-        </CardTitle>
+        <CardTitle>Exaltation Forge simulator</CardTitle>
         <CardDescription>
-          Here you can find hunting spots as well as recommendations of set to
-          use there and which imbuements to use.
+          Estimate fusion gold, Exalted Core usage, and item cost up to a target
+          tier. Forge gold per classification matches Tibia Wiki (regular
+          fusion).
         </CardDescription>
       </CardHeader>
+      <CardContent>
+        <ExaltationForgeSimulator />
+      </CardContent>
     </Card>
   );
 };
