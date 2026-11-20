@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// Reglas para la app de Lista de Deseos Familiar.
+// - El acceso está limitado por "código familiar": cada quien sólo ve a los
+//   familiares y las listas que comparten su mismo familyCode.
+// - Cada quien sólo puede escribir/borrar lo suyo.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Código familiar del usuario que hace la petición.
+    function miFamilia() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyCode;
+    }
+
+    // Perfiles de los familiares.
+    match /users/{uid} {
+      // Puedo leer mi propio perfil siempre, y el de quienes comparten mi familyCode.
+      allow read: if request.auth != null
+                  && (request.auth.uid == uid || resource.data.familyCode == miFamilia());
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Deseos de la lista.
+    match /wishes/{wishId} {
+      // Puedo leer mis propios deseos, y los de mi misma familia.
+      allow read: if request.auth != null
+                  && (request.auth.uid == resource.data.ownerUid
+                      || resource.data.familyCode == miFamilia());
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.ownerUid
+                    && request.resource.data.familyCode == miFamilia();
+      allow update, delete: if request.auth != null
+                    && request.auth.uid == resource.data.ownerUid;
+    }
+  }
+}
