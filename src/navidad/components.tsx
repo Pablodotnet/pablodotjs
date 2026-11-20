@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { TIENDA_META, type Tienda, type Wish } from './types'
 
@@ -38,12 +39,31 @@ export function NavidadShell({ children }: { children: React.ReactNode }) {
 export function WishCard({
   wish,
   onBorrar,
+  onComprar,
 }: {
   wish: Wish
   onBorrar?: (id: string) => void
+  onComprar?: (id: string) => Promise<void>
 }) {
+  const [guardando, setGuardando] = useState(false)
+  const [error, setError] = useState('')
+  const comprado = wish.comprado === true
+
+  async function comprar() {
+    if (!onComprar || guardando || comprado) return
+    setGuardando(true)
+    setError('')
+    try {
+      await onComprar(wish.id)
+    } catch {
+      setError('No se pudo marcar como comprado. Intenta de nuevo.')
+    } finally {
+      setGuardando(false)
+    }
+  }
+
   return (
-    <li className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-gray-300">
+    <li className={`group rounded-xl border border-gray-200 p-4 shadow-sm transition-colors ${comprado ? 'bg-gray-100' : 'bg-white hover:border-gray-300'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
@@ -52,7 +72,11 @@ export function WishCard({
               <span className="font-mono text-xs text-gray-500">{wish.precio}</span>
             )}
           </div>
-          <a
+          {comprado ? (
+            <p className="truncate font-medium text-gray-500 line-through" title={wish.titulo}>
+              {wish.titulo}
+            </p>
+          ) : <a
             href={wish.url}
             target="_blank"
             rel="noopener noreferrer"
@@ -60,16 +84,35 @@ export function WishCard({
             title={wish.titulo}
           >
             {wish.titulo}
-          </a>
+          </a>}
           {wish.nota && <p className="mt-1 text-sm text-gray-600">{wish.nota}</p>}
-          <a
+          {comprado ? (
+            <p className="mt-2 truncate font-mono text-[11px] text-gray-500">{wish.url}</p>
+          ) : <a
             href={wish.url}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2 inline-block truncate font-mono text-[11px] text-gray-400 hover:text-gray-600"
           >
             {wish.url}
-          </a>
+          </a>}
+          {comprado ? (
+            <p role="status" className="mt-3 text-sm font-medium text-gray-600">✓ Ya se compró</p>
+          ) : onComprar && (
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={comprar}
+                disabled={guardando}
+                aria-label={`Marcar ${wish.titulo} como comprado`}
+                className="rounded-lg border border-cyan-700 px-3 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-50 disabled:cursor-wait disabled:opacity-50"
+              >
+                {guardando ? 'Guardando…' : 'Ya se compró'}
+              </button>
+              <p className="mt-1 text-xs text-gray-500">Se deshabilitará para todos. No se mostrará quién lo compró.</p>
+            </div>
+          )}
+          {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
         {onBorrar && (
           <button

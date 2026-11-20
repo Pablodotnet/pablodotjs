@@ -7,6 +7,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  runTransaction,
   setDoc,
   where,
 } from 'firebase/firestore'
@@ -51,13 +52,29 @@ export async function borrarDeseo(id: string) {
   await deleteDoc(doc(wishesRef(), id))
 }
 
+// Solo se guarda el estado: ningún dato de quien compró el regalo.
+export async function marcarDeseoComprado(id: string) {
+  const ref = doc(wishesRef(), id)
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(ref)
+    if (!snap.exists()) throw new Error('El deseo ya no existe.')
+    if (snap.data().comprado === true) return
+    transaction.update(ref, { comprado: true })
+  })
+}
+
 // Escucha en tiempo real los deseos de un familiar.
 export function escucharDeseosDe(
   ownerUid: string,
+  familyCode: string,
   cb: (deseos: Wish[]) => void,
   onError?: (e: unknown) => void,
 ) {
-  const q = query(wishesRef(), where('ownerUid', '==', ownerUid))
+  const q = query(
+    wishesRef(),
+    where('ownerUid', '==', ownerUid),
+    where('familyCode', '==', familyCode),
+  )
   return onSnapshot(
     q,
     (snap) => {

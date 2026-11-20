@@ -3,7 +3,9 @@ rules_version = '2';
 // Reglas para la app de Lista de Deseos Familiar.
 // - El acceso está limitado por "código familiar": cada quien sólo ve a los
 //   familiares y las listas que comparten su mismo familyCode.
-// - Cada quien sólo puede escribir/borrar lo suyo.
+// - Cada quien edita/borra lo suyo; otros familiares pueden marcarlo comprado.
+// - comprado es un booleano opcional (ausente equivale a false).
+//   No se guarda la identidad de quien compra.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -28,8 +30,25 @@ service cloud.firestore {
                       || resource.data.familyCode == miFamilia());
       allow create: if request.auth != null
                     && request.auth.uid == request.resource.data.ownerUid
-                    && request.resource.data.familyCode == miFamilia();
-      allow update, delete: if request.auth != null
+                    && request.resource.data.familyCode == miFamilia()
+                    && request.resource.data.keys().hasOnly([
+                      'ownerUid', 'ownerName', 'familyCode', 'titulo', 'url',
+                      'tienda', 'precio', 'nota', 'createdAt', 'comprado'
+                    ])
+                    && request.resource.data.get('comprado', false) == false;
+      allow update: if request.auth != null
+                    && (
+                      (request.auth.uid == resource.data.ownerUid
+                       && request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota']))
+                      || (request.auth.uid != resource.data.ownerUid
+                          && resource.data.familyCode == miFamilia()
+                          && resource.data.get('comprado', false) == false
+                          && request.resource.data.comprado == true
+                          && request.resource.data.diff(resource.data).affectedKeys()
+                              .hasOnly(['comprado']))
+                    );
+      allow delete: if request.auth != null
                     && request.auth.uid == resource.data.ownerUid;
     }
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from './auth'
-import { escucharDeseosDe, obtenerFamiliar } from './db'
+import { escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
 import type { FamilyUser, Wish } from './types'
 import { NavidadShell, WishCard } from './components'
 
@@ -41,6 +41,7 @@ export default function ListaFamiliar() {
 
     const unsub = escucharDeseosDe(
       uid,
+      miCodigo,
       (d) => {
         if (!activo) return
         setDeseos(d)
@@ -109,7 +110,11 @@ export default function ListaFamiliar() {
       ) : (
         <ul className="space-y-3">
           {deseos.map((w) => (
-            <WishCard key={w.id} wish={w} />
+            <WishCard
+              key={w.id}
+              wish={w}
+              onComprar={perfil?.uid !== w.ownerUid ? marcarDeseoComprado : undefined}
+            />
           ))}
         </ul>
       )}

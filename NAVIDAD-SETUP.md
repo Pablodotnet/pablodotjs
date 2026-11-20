@@ -74,10 +74,16 @@ En Amplify → **Hosting → Environment variables**, agrega las mismas 6 variab
 
 - **`/navidad`** — pantalla de entrada con Google. Ya logueado: tu lista (pegar
   link + título + precio/nota) y las tarjetas de los demás familiares.
-- **`/navidad/lista/:uid`** — vista de solo lectura de la lista de un familiar.
+- **`/navidad/lista/:uid`** — lista de un familiar con botón **Ya se compró**.
   Es el link que se comparte (botón **Copiar link**). Requiere iniciar sesión.
-- **Seguridad:** cualquier familiar logueado puede *ver* todas las listas; cada
-  quien sólo puede *editar/borrar* la suya (ver `firestore.rules`).
+- Un producto comprado aparece atenuado, sin enlaces activos y con el estado
+  **Ya se compró**, en tiempo real para toda la familia. No se guarda quién lo
+  compró. Los productos existentes sin `comprado` siguen disponibles.
+- **Seguridad:** solo miembros con el mismo código familiar pueden ver las
+  listas. Cada quien edita/borra la suya; únicamente otro familiar puede marcar
+  un deseo como comprado, sin cambiar sus demás datos ni revertir el estado.
+- Al publicar esta versión, desplegar también las reglas con
+  `npx firebase-tools deploy --only firestore:rules`.
 
 ## Pendiente opcional (v2)
 

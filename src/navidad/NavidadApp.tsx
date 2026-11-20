@@ -73,11 +73,11 @@ function MiLista({
   const [error, setError] = useState('')
 
   useEffect(() => {
-    return escucharDeseosDe(uid, setDeseos, (e) => {
+    return escucharDeseosDe(uid, familyCode, setDeseos, (e) => {
       console.error(e)
       setError('No se pudieron cargar tus deseos.')
     })
-  }, [uid])
+  }, [uid, familyCode])
 
   async function onAgregar(e: React.FormEvent) {
     e.preventDefault()
