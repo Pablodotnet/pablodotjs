@@ -71,6 +71,24 @@ function MiLista({
   const [nota, setNota] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [copia, setCopia] = useState<'idle' | 'copiando' | 'copiado' | 'error'>('idle')
+  const miLink = `${window.location.origin}/navidad/lista/${uid}`
+
+  useEffect(() => {
+    if (copia !== 'copiado') return
+    const timer = window.setTimeout(() => setCopia('idle'), 2000)
+    return () => window.clearTimeout(timer)
+  }, [copia])
+
+  async function copiarMiLink() {
+    setCopia('copiando')
+    try {
+      await navigator.clipboard.writeText(miLink)
+      setCopia('copiado')
+    } catch {
+      setCopia('error')
+    }
+  }
 
   useEffect(() => {
     return escucharDeseosDe(uid, familyCode, setDeseos, (e) => {
@@ -99,7 +117,32 @@ function MiLista({
 
   return (
     <section className="mb-10">
-      <h2 className="mb-3 text-lg font-semibold">Mi lista de deseos</h2>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">Mi lista de deseos</h2>
+        <button
+          type="button"
+          onClick={copiarMiLink}
+          disabled={copia === 'copiando'}
+          className="rounded-lg border border-cyan-700 px-3 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-50 disabled:cursor-wait disabled:opacity-50"
+        >
+          {copia === 'copiado' ? '¡Link copiado!' : copia === 'copiando' ? 'Copiando…' : 'Copiar mi link'}
+        </button>
+      </div>
+      <div aria-live="polite">
+        {copia === 'copiado' && <p className="mb-3 text-sm text-cyan-800">Enlace de tu lista copiado para compartir.</p>}
+        {copia === 'error' && (
+          <label className="mb-3 block text-sm text-gray-600">
+            No se pudo copiar automáticamente. Copia este enlace:
+            <input
+              type="text"
+              readOnly
+              value={miLink}
+              onFocus={(e) => e.currentTarget.select()}
+              className="mt-1 block w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+            />
+          </label>
+        )}
+      </div>
 
       <form
         onSubmit={onAgregar}
