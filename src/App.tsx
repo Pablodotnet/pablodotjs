@@ -146,7 +146,7 @@ function App() {
                 <span className="text-accent">/</span> proyectos
               </h2>
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
-                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                <div className="h-64 shrink-0 bg-neutral-900 overflow-hidden">
                   <img src={tibiatoolsImg} alt="Captura de TibiaTools" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="p-6 overflow-y-auto flex-1">
@@ -177,7 +177,7 @@ function App() {
           {active === 3 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
-                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                <div className="h-64 shrink-0 bg-neutral-900 overflow-hidden">
                   <img src={snacksImg} alt="Captura de Snack's Adventures" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="p-6 overflow-y-auto flex-1">
@@ -198,7 +198,7 @@ function App() {
           {active === 4 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
-                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                <div className="h-64 shrink-0 bg-neutral-900 overflow-hidden">
                   <img src={chingatealvecinoImg} alt="Captura de Chíngate al Vecino" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="p-6 overflow-y-auto flex-1">
@@ -224,7 +224,7 @@ function App() {
           {active === 5 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
-                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                <div className="h-64 shrink-0 bg-neutral-900 overflow-hidden">
                   <img src={gangrenaotImg} alt="Captura de Gangrena OT" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="p-6 overflow-y-auto flex-1">
