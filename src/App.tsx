@@ -109,14 +109,19 @@ function App() {
               </h2>
               <div className="bg-dark-card border border-dark-border rounded-xl p-6 space-y-5">
                 <p className="text-gray-300 leading-relaxed">
-                  Soy Ingeniero de Software con experiencia en desarrollo web full-stack y creación de videojuegos.
-                  Me apasiona construir aplicaciones eficientes, escribiendo código limpio y manteniendo buenas
-                  prácticas de desarrollo.
+                  Soy <span className="text-white font-medium">Staff Software Engineer</span> con 10 años de experiencia
+                  construyendo aplicaciones web y móviles. Actualmente diseño y desarrollo nuevas funcionalidades con
+                  React, Python y Rust, e integro modelos de IA en el producto de Marketplace.City.
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  Con trayectoria como Tech Lead en IBM y DigitalOnUs by Tech Mahindra: arquitectura frontend, code
+                  reviews, mentoría de equipos y planeación de features junto a product owners y diseñadores. Ingeniero
+                  en Computación por la UABC y AWS Certified Cloud Practitioner.
                 </p>
                 <div>
                   <h3 className="text-white font-semibold mb-3 font-mono text-sm text-accent">stack principal</h3>
                   <div className="flex flex-wrap gap-2">
-                    {['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'Firebase', 'Vite', 'Phaser'].map((tech) => (
+                    {['React', 'TypeScript', 'Next.js', 'Python', 'Rust', 'Node.js', 'AWS', 'PostgreSQL', 'Docker'].map((tech) => (
                       <span key={tech} className="font-mono text-xs text-accent bg-accent/10 px-2 py-1 rounded">{tech}</span>
                     ))}
                   </div>
@@ -125,14 +130,29 @@ function App() {
                   <h3 className="text-white font-semibold mb-3 font-mono text-sm text-accent">experiencia</h3>
                   <div className="space-y-3">
                     <div className="border-l-2 border-dark-border pl-4">
-                      <p className="text-white font-medium">Full-Stack Developer</p>
-                      <p className="text-sm text-gray-400">2024 — Presente</p>
-                      <p className="text-sm text-gray-500 mt-1">Desarrollo de aplicaciones web con React, TypeScript y Firebase.</p>
+                      <p className="text-white font-medium">Staff Engineer · Marketplace.City</p>
+                      <p className="text-sm text-gray-400">Mayo 2025 — Presente</p>
+                      <p className="text-sm text-gray-500 mt-1">Nuevas funcionalidades con React, Python y Rust, e integración de modelos de IA en el producto.</p>
                     </div>
                     <div className="border-l-2 border-dark-border pl-4">
-                      <p className="text-white font-medium">Game Developer</p>
-                      <p className="text-sm text-gray-400">2023 — Presente</p>
-                      <p className="text-sm text-gray-500 mt-1">Creación de videojuegos 2D con Phaser, JavaScript y Aseprite.</p>
+                      <p className="text-white font-medium">Tech Lead · DigitalOnUs by Tech Mahindra</p>
+                      <p className="text-sm text-gray-400">Noviembre 2023 — Marzo 2025</p>
+                      <p className="text-sm text-gray-500 mt-1">Lideré el desarrollo de la app web (React) de un cliente: decisiones técnicas, code reviews y cambios al backend.</p>
+                    </div>
+                    <div className="border-l-2 border-dark-border pl-4">
+                      <p className="text-white font-medium">Senior Software Developer · DigitalOnUs</p>
+                      <p className="text-sm text-gray-400">Octubre 2021 — Octubre 2023</p>
+                      <p className="text-sm text-gray-500 mt-1">Capacidades internas de analítica y un adaptador para apps Angular/React/Next.js (auth, analytics, logging, feature flags).</p>
+                    </div>
+                    <div className="border-l-2 border-dark-border pl-4">
+                      <p className="text-white font-medium">Lead Frontend · IBM</p>
+                      <p className="text-sm text-gray-400">Abril 2019 — Octubre 2021</p>
+                      <p className="text-sm text-gray-500 mt-1">Arquitectura frontend, mentoría de desarrolladores y code reviews; apps internas con Angular y React.</p>
+                    </div>
+                    <div className="border-l-2 border-dark-border pl-4">
+                      <p className="text-white font-medium">Co-Founder · Nutriconsultor</p>
+                      <p className="text-sm text-gray-400">2016 — 2018</p>
+                      <p className="text-sm text-gray-500 mt-1">Cofundé la startup: construí el producto en Web, Desktop, iOS y Android, y lideré el aseguramiento de calidad.</p>
                     </div>
                   </div>
                 </div>
