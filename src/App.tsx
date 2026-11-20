@@ -66,7 +66,7 @@ function App() {
     <div className="h-dvh bg-dark-base text-gray-300 font-sans antialiased selection:bg-accent selection:text-dark-base overflow-hidden flex flex-col">
       <nav className="shrink-0 w-full z-50 bg-dark-base/80 backdrop-blur-md border-b border-dark-border">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className="text-white font-semibold text-lg tracking-wider">pablodotjs</span>
+          <button onClick={() => navigate(0)} className="text-white font-semibold text-lg tracking-wider hover:text-accent transition-colors cursor-pointer">pablodotjs</button>
           <div className="space-x-6 text-sm">
             <button onClick={() => navigate(1)} className="hover:text-accent transition-colors">Resumen</button>
             <button onClick={() => navigate(2)} className="hover:text-accent transition-colors">Proyectos</button>
@@ -94,7 +94,7 @@ function App() {
                 Ingeniero de <span className="text-accent">Software</span>.
               </h1>
               <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
-                Construyendo experiencias digitales y videojuegos con un enfoque limpio y eficiente.
+                Staff Software Engineer con 10 años construyendo aplicaciones web y móviles con React, Python y Rust, e integrando modelos de IA.
               </p>
               <button onClick={() => navigate(1)} className="bg-white text-dark-base px-6 py-3 rounded-md font-medium hover:bg-accent hover:text-dark-base transition-all duration-300">
                 Conoce más sobre mí
