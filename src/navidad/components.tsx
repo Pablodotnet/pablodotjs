@@ -23,12 +23,6 @@ export function NavidadShell({ children }: { children: React.ReactNode }) {
             <span>🎄</span>
             <span className="font-semibold">Lista de Deseos</span>
           </Link>
-          <Link
-            to="/"
-            className="font-mono text-xs text-gray-500 transition-colors hover:text-gray-900"
-          >
-            ← Portafolio
-          </Link>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
