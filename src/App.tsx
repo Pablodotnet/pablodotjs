@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import tibiatoolsImg from './assets/projects/tibiatools.jpg'
 import chingatealvecinoImg from './assets/projects/chingatealvecino.jpg'
 import gangrenaotImg from './assets/projects/gangrenaot.jpg'
+import snacksImg from './assets/projects/snacks-adventures.jpg'
 
 const SECTIONS = [
   { id: 'intro', label: 'Inicio' },
@@ -176,6 +177,9 @@ function App() {
           {active === 3 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
+                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                  <img src={snacksImg} alt="Captura de Snack's Adventures" className="w-full h-full object-cover object-top" />
+                </div>
                 <div className="p-6 overflow-y-auto flex-1">
                   <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-accent transition-colors">Snack's Adventures</h3>
                   <p className="text-gray-400 mb-5">
