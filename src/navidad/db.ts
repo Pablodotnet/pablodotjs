@@ -66,15 +66,12 @@ export async function marcarDeseoComprado(id: string) {
 // Escucha en tiempo real los deseos de un familiar.
 export function escucharDeseosDe(
   ownerUid: string,
-  familyCode: string,
   cb: (deseos: Wish[]) => void,
   onError?: (e: unknown) => void,
 ) {
-  const q = query(
-    wishesRef(),
-    where('ownerUid', '==', ownerUid),
-    where('familyCode', '==', familyCode),
-  )
+  // La familia actual del propietario determina el acceso en las reglas.
+  // Los deseos se conservan al salir o cambiar de familia.
+  const q = query(wishesRef(), where('ownerUid', '==', ownerUid))
   return onSnapshot(
     q,
     (snap) => {

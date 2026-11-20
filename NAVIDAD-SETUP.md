@@ -82,6 +82,10 @@ En Amplify → **Hosting → Environment variables**, agrega las mismas 6 variab
 - **Seguridad:** solo miembros con el mismo código familiar pueden ver las
   listas. Cada quien edita/borra la suya; únicamente otro familiar puede marcar
   un deseo como comprado, sin cambiar sus demás datos ni revertir el estado.
+- **Desvincularme de la familia:** pide confirmación antes de quitar el código
+  del perfil. Se conserva la sesión y los deseos; se vuelve a pedir un código.
+  La familia anterior pierde acceso a la lista. Al unirse a otra familia, los
+  deseos existentes se comparten con la nueva familia según el perfil actual.
 - Al publicar esta versión, desplegar también las reglas con
   `npx firebase-tools deploy --only firestore:rules`.
 

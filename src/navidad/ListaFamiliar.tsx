@@ -41,7 +41,6 @@ export default function ListaFamiliar() {
 
     const unsub = escucharDeseosDe(
       uid,
-      miCodigo,
       (d) => {
         if (!activo) return
         setDeseos(d)

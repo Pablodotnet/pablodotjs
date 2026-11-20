@@ -11,14 +11,22 @@ service cloud.firestore {
 
     // Código familiar del usuario que hace la petición.
     function miFamilia() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyCode;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('familyCode', '');
+    }
+
+    // Consultar el perfil actual evita que una lista siga compartida al salir.
+    // familyCode en los deseos antiguos no determina la pertenencia actual.
+    function comparteFamilia(uid) {
+      return miFamilia() != ''
+             && get(/databases/$(database)/documents/users/$(uid)).data.get('familyCode', '') == miFamilia();
     }
 
     // Perfiles de los familiares.
     match /users/{uid} {
       // Puedo leer mi propio perfil siempre, y el de quienes comparten mi familyCode.
       allow read: if request.auth != null
-                  && (request.auth.uid == uid || resource.data.familyCode == miFamilia());
+                  && (request.auth.uid == uid
+                      || (miFamilia() != '' && resource.data.get('familyCode', '') == miFamilia()));
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
@@ -27,9 +35,10 @@ service cloud.firestore {
       // Puedo leer mis propios deseos, y los de mi misma familia.
       allow read: if request.auth != null
                   && (request.auth.uid == resource.data.ownerUid
-                      || resource.data.familyCode == miFamilia());
+                      || comparteFamilia(resource.data.ownerUid));
       allow create: if request.auth != null
                     && request.auth.uid == request.resource.data.ownerUid
+                    && miFamilia() != ''
                     && request.resource.data.familyCode == miFamilia()
                     && request.resource.data.keys().hasOnly([
                       'ownerUid', 'ownerName', 'familyCode', 'titulo', 'url',
@@ -42,7 +51,7 @@ service cloud.firestore {
                        && request.resource.data.diff(resource.data).affectedKeys()
                            .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota']))
                       || (request.auth.uid != resource.data.ownerUid
-                          && resource.data.familyCode == miFamilia()
+                          && comparteFamilia(resource.data.ownerUid)
                           && resource.data.get('comprado', false) == false
                           && request.resource.data.comprado == true
                           && request.resource.data.diff(resource.data).affectedKeys()

@@ -67,19 +67,45 @@ try {
   const familyQuery = {
     structuredQuery: {
       from: [{ collectionId: 'wishes' }],
-      where: { compositeFilter: { op: 'AND', filters: [
-        { fieldFilter: { field: { fieldPath: 'ownerUid' }, op: 'EQUAL', value: { stringValue: owner } } },
-        { fieldFilter: { field: { fieldPath: 'familyCode' }, op: 'EQUAL', value: { stringValue: prefix } } },
-      ] } },
+      where: { fieldFilter: { field: { fieldPath: 'ownerUid' }, op: 'EQUAL', value: { stringValue: owner } } },
     },
   }
-  for (const [uid, status] of [[owner, 200], [buyer, 200], [other, 403]]) {
+  async function expectList(uid, status) {
     await expect(await fetch(`${base}:runQuery`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token(uid)}` },
       body: JSON.stringify(familyQuery),
     }), status)
   }
+  for (const [uid, status] of [[owner, 200], [buyer, 200], [other, 403]]) {
+    await expectList(uid, status)
+  }
+
+  // Leaving removes only membership, retains the profile and wishes, and revokes access.
+  await expect(await request(`users/${owner}`, buyer, 'PATCH', {}, ['familyCode']), 403)
+  await expect(await request(`users/${buyer}`, buyer, 'PATCH', {}, ['familyCode']), 200)
+  await expect(await request(wish, buyer), 403)
+  await expectList(buyer, 403)
+  await expect(await request(wish, buyer, 'PATCH', { comprado: true }, ['comprado']), 403)
+  await expect(await request(`users/${buyer}`, buyer), 200)
+  await expect(await request(`users/${owner}`, owner, 'PATCH', {}, ['familyCode']), 200)
+  await expect(await request(wish, owner), 200)
+  await expectList(owner, 200)
+  await expect(await request(wish, buyer), 403)
+  await expect(await request(`users/${owner}`, buyer), 403)
+  await expect(await request(`users/${buyer}`, buyer, 'PATCH', { familyCode: prefix }, ['familyCode']), 200)
+  await expect(await request(wish, buyer), 403)
+  await expectList(buyer, 403)
+
+  // A new family sees existing wishes even when their stored familyCode is old.
+  await expect(await request(`users/${owner}`, owner, 'PATCH', { familyCode: 'otra-familia' }, ['familyCode']), 200)
+  await expect(await request(wish, other), 200)
+  await expectList(other, 200)
+  await expect(await request(wish, buyer), 403)
+  await expect(await request(wish, buyer, 'PATCH', { comprado: true }, ['comprado']), 403)
+  await expect(await request(`users/${owner}`, owner, 'PATCH', { familyCode: prefix }, ['familyCode']), 200)
+  await expectList(buyer, 200)
+  await expect(await request(wish, other), 403)
   await expect(await request(wish, owner, 'PATCH', { comprado: true }, ['comprado']), 403)
   await expect(await request(wish, other, 'PATCH', { comprado: true }, ['comprado']), 403)
   await expect(await request(wish, null, 'PATCH', { comprado: true }, ['comprado']), 403)
@@ -106,7 +132,7 @@ try {
   await expect(await request(wish, owner, 'PATCH', { ...wishData, comprado: true }), 403)
   await expect(await request(wish, owner, 'PATCH', { ...wishData, buyerUid: buyer }), 403)
   await expect(await request(wish, buyer, 'PATCH', wishData), 403)
-  console.log(`${checks} purchase rule checks passed.`)
+  console.log(`${checks} purchase and family membership rule checks passed.`)
 } finally {
   for (const path of created) await request(path, 'admin', 'DELETE')
 }

@@ -5,7 +5,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
-import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { deleteField, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db, googleProvider, firebaseReady } from '../lib/firebase'
 import type { FamilyUser } from './types'
 import { normalizarCodigo } from './types'
@@ -18,6 +18,7 @@ interface AuthState {
   entrarConGoogle: () => Promise<void>
   salir: () => Promise<void>
   guardarCodigoFamiliar: (code: string) => Promise<void>
+  desvincularFamilia: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -86,6 +87,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await setDoc(doc(db, 'users', user.uid), { familyCode }, { merge: true })
   }
 
+  async function desvincularFamilia() {
+    if (!user) throw new Error('Debes iniciar sesión.')
+    await updateDoc(doc(db, 'users', user.uid), { familyCode: deleteField() })
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -96,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         entrarConGoogle,
         salir,
         guardarCodigoFamiliar,
+        desvincularFamilia,
       }}
     >
       {children}

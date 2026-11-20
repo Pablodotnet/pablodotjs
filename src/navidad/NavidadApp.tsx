@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from './auth'
 import {
@@ -11,7 +11,7 @@ import type { FamilyUser, Wish } from './types'
 import { Boton, NavidadShell, WishCard } from './components'
 
 export default function NavidadApp() {
-  const { user, perfil, salir } = useAuth()
+  const { user, perfil, salir, desvincularFamilia } = useAuth()
   if (!user || !perfil?.familyCode) return null
 
   const familyCode = perfil.familyCode
@@ -36,6 +36,7 @@ export default function NavidadApp() {
                 {familyCode}
               </span>
             </p>
+            <DesvincularFamilia familyCode={familyCode} onDesvincular={desvincularFamilia} />
           </div>
         </div>
         <button
@@ -53,6 +54,81 @@ export default function NavidadApp() {
       />
       <Familia miUid={user.uid} familyCode={familyCode} />
     </NavidadShell>
+  )
+}
+
+function DesvincularFamilia({
+  familyCode,
+  onDesvincular,
+}: {
+  familyCode: string
+  onDesvincular: () => Promise<void>
+}) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [guardando, setGuardando] = useState(false)
+  const [error, setError] = useState('')
+
+  async function confirmar() {
+    if (guardando) return
+    setGuardando(true)
+    setError('')
+    try {
+      await onDesvincular()
+      dialog.current?.close()
+    } catch {
+      setError('No se pudo desvincular de la familia. Intenta de nuevo.')
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setError('')
+          dialog.current?.showModal()
+        }}
+        className="mt-1 text-xs text-red-700 hover:underline"
+      >
+        Desvincularme de la familia
+      </button>
+      <dialog
+        ref={dialog}
+        aria-labelledby="desvincular-titulo"
+        aria-describedby="desvincular-descripcion"
+        aria-busy={guardando}
+        onCancel={(e) => { if (guardando) e.preventDefault() }}
+        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-gray-200 bg-white p-6 text-gray-900 shadow-xl backdrop:bg-black/40"
+      >
+        <h2 id="desvincular-titulo" className="text-lg font-semibold">¿Desvincularte de la familia?</h2>
+        <p id="desvincular-descripcion" className="mt-3 text-sm text-gray-600">
+          Saldrás de la familia <strong className="break-all">{familyCode}</strong> y dejarán de compartir sus listas contigo.
+          Tus deseos se conservarán. Podrás ingresar un código para volver a unirte o entrar a otra familia.
+        </p>
+        {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+        <div className="mt-6 flex flex-wrap justify-end gap-3">
+          <button
+            type="button"
+            autoFocus
+            disabled={guardando}
+            onClick={() => dialog.current?.close()}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            disabled={guardando}
+            onClick={confirmar}
+            className="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 disabled:cursor-wait disabled:opacity-50"
+          >
+            {guardando ? 'Desvinculando…' : 'Sí, desvincularme'}
+          </button>
+        </div>
+      </dialog>
+    </>
   )
 }
 
@@ -91,7 +167,7 @@ function MiLista({
   }
 
   useEffect(() => {
-    return escucharDeseosDe(uid, familyCode, setDeseos, (e) => {
+    return escucharDeseosDe(uid, setDeseos, (e) => {
       console.error(e)
       setError('No se pudieron cargar tus deseos.')
     })
