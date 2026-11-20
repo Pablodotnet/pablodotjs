@@ -66,7 +66,7 @@ function App() {
     <div className="h-dvh bg-dark-base text-gray-300 font-sans antialiased selection:bg-accent selection:text-dark-base overflow-hidden flex flex-col">
       <nav className="shrink-0 w-full z-50 bg-dark-base/80 backdrop-blur-md border-b border-dark-border">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className="text-white font-semibold text-lg tracking-wider">dev.portafolio</span>
+          <span className="text-white font-semibold text-lg tracking-wider">pablodotjs</span>
           <div className="space-x-6 text-sm">
             <button onClick={() => navigate(1)} className="hover:text-accent transition-colors">Resumen</button>
             <button onClick={() => navigate(2)} className="hover:text-accent transition-colors">Proyectos</button>
