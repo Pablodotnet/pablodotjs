@@ -92,12 +92,13 @@ export function WishCard({
             href={wish.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block truncate font-mono text-[11px] text-gray-400 hover:text-gray-600"
+            className="mt-2 block max-w-full truncate font-mono text-[11px] text-gray-400 hover:text-gray-600"
+            title={wish.url}
           >
             {wish.url}
           </a>}
           {comprado ? (
-            <p role="status" className="mt-3 text-sm font-medium text-gray-600">✓ Ya se compró</p>
+            <p role="status" className="mt-3 text-sm font-medium text-gray-600">✓ Ya se lo compré</p>
           ) : onComprar && (
             <div className="mt-3">
               <button
@@ -107,7 +108,7 @@ export function WishCard({
                 aria-label={`Marcar ${wish.titulo} como comprado`}
                 className="rounded-lg border border-cyan-700 px-3 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-50 disabled:cursor-wait disabled:opacity-50"
               >
-                {guardando ? 'Guardando…' : 'Ya se compró'}
+                {guardando ? 'Guardando…' : 'Ya se lo compré'}
               </button>
               <p className="mt-1 text-xs text-gray-500">Se deshabilitará para todos. No se mostrará quién lo compró.</p>
             </div>

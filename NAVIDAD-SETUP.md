@@ -74,10 +74,10 @@ En Amplify → **Hosting → Environment variables**, agrega las mismas 6 variab
 
 - **`/navidad`** — pantalla de entrada con Google. Ya logueado: tu lista (pegar
   link + título + precio/nota) y las tarjetas de los demás familiares.
-- **`/navidad/lista/:uid`** — lista de un familiar con botón **Ya se compró**.
+- **`/navidad/lista/:uid`** — lista de un familiar con botón **Ya se lo compré**.
   Es el link que se comparte (botón **Copiar link**). Requiere iniciar sesión.
 - Un producto comprado aparece atenuado, sin enlaces activos y con el estado
-  **Ya se compró**, en tiempo real para toda la familia. No se guarda quién lo
+  **Ya se lo compré**, en tiempo real para toda la familia. No se guarda quién lo
   compró. Los productos existentes sin `comprado` siguen disponibles.
 - **Seguridad:** solo miembros con el mismo código familiar pueden ver las
   listas. Cada quien edita/borra la suya; únicamente otro familiar puede marcar
