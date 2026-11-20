@@ -1,4 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
+import tibiatoolsImg from './assets/projects/tibiatools.jpg'
+import chingatealvecinoImg from './assets/projects/chingatealvecino.jpg'
+import gangrenaotImg from './assets/projects/gangrenaot.jpg'
 
 const SECTIONS = [
   { id: 'intro', label: 'Inicio' },
@@ -142,6 +145,9 @@ function App() {
                 <span className="text-accent">/</span> proyectos
               </h2>
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
+                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                  <img src={tibiatoolsImg} alt="Captura de TibiaTools" className="w-full h-full object-cover object-top" />
+                </div>
                 <div className="p-6 overflow-y-auto flex-1">
                   <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-accent transition-colors">TibiaTools</h3>
                   <p className="text-gray-400 mb-5">
@@ -188,6 +194,9 @@ function App() {
           {active === 4 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
+                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                  <img src={chingatealvecinoImg} alt="Captura de Chíngate al Vecino" className="w-full h-full object-cover object-top" />
+                </div>
                 <div className="p-6 overflow-y-auto flex-1">
                   <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-accent transition-colors">Chíngate al Vecino</h3>
                   <p className="text-gray-400 mb-5">
@@ -211,6 +220,9 @@ function App() {
           {active === 5 && (
             <div className="max-w-4xl mx-auto w-full max-h-full overflow-y-auto py-4">
               <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300 flex flex-col max-h-[70vh]">
+                <div className="h-40 shrink-0 bg-neutral-900 overflow-hidden">
+                  <img src={gangrenaotImg} alt="Captura de Gangrena OT" className="w-full h-full object-cover object-top" />
+                </div>
                 <div className="p-6 overflow-y-auto flex-1">
                   <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-accent transition-colors">Gangrena OT</h3>
                   <p className="text-gray-400 mb-5">
