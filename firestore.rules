@@ -60,5 +60,27 @@ service cloud.firestore {
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.ownerUid;
     }
+
+    // -------------------------------------------------------------------
+    // Price Tracker: cada quien ve y administra sólo sus propios productos.
+    // El rastreador de precios corre con el Admin SDK (service account), que
+    // ignora estas reglas; por eso el cliente nunca escribe el historial.
+    // -------------------------------------------------------------------
+    match /products/{productId} {
+      allow read: if request.auth != null
+                  && request.auth.uid == resource.data.ownerUid;
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.ownerUid;
+      allow update, delete: if request.auth != null
+                            && request.auth.uid == resource.data.ownerUid;
+
+      // Historial de precios: lo escribe únicamente el rastreador (Admin SDK).
+      // El cliente sólo puede leer el historial de sus propios productos.
+      match /historial/{entryId} {
+        allow read: if request.auth != null
+                    && get(/databases/$(database)/documents/products/$(productId)).data.ownerUid == request.auth.uid;
+        allow write: if false;
+      }
+    }
   }
 }
