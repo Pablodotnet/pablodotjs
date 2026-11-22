@@ -34,14 +34,17 @@ export function WishCard({
   wish,
   onBorrar,
   onComprar,
+  comprado = false,
 }: {
   wish: Wish
   onBorrar?: (id: string) => void
   onComprar?: (id: string) => Promise<void>
+  // El estado "comprado" viene del padre (colección `compras`), nunca del deseo.
+  // En la lista propia del dueño siempre es false: nunca ve qué le compraron.
+  comprado?: boolean
 }) {
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
-  const comprado = wish.comprado === true
 
   async function comprar() {
     if (!onComprar || guardando || comprado) return

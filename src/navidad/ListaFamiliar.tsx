@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from './auth'
-import { escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
+import { escucharComprasDe, escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
 import type { FamilyUser, Wish } from './types'
 import { NavidadShell, WishCard } from './components'
 
@@ -10,10 +10,13 @@ export default function ListaFamiliar() {
   const { perfil } = useAuth()
   const [familiar, setFamiliar] = useState<FamilyUser | null>(null)
   const [deseos, setDeseos] = useState<Wish[]>([])
+  const [compradas, setCompradas] = useState<Set<string>>(new Set())
   const [cargando, setCargando] = useState(true)
   const [denegado, setDenegado] = useState(false)
 
   const miCodigo = perfil?.familyCode
+  // Si es mi propio link, es mi lista: nunca debo ver qué me compraron.
+  const esMiLista = !!perfil?.uid && perfil.uid === uid
 
   useEffect(() => {
     if (!uid || !miCodigo) return
@@ -59,6 +62,13 @@ export default function ListaFamiliar() {
       unsub()
     }
   }, [uid, miCodigo])
+
+  // Qué deseos ya fueron comprados (solo si NO es mi propia lista).
+  useEffect(() => {
+    setCompradas(new Set())
+    if (!uid || !miCodigo || esMiLista) return
+    return escucharComprasDe(uid, setCompradas, (e) => console.error(e))
+  }, [uid, miCodigo, esMiLista])
 
   if (denegado) {
     return (
@@ -112,7 +122,12 @@ export default function ListaFamiliar() {
             <WishCard
               key={w.id}
               wish={w}
-              onComprar={perfil?.uid !== w.ownerUid ? marcarDeseoComprado : undefined}
+              comprado={esMiLista ? false : compradas.has(w.id)}
+              onComprar={
+                esMiLista || !miCodigo
+                  ? undefined
+                  : (id) => marcarDeseoComprado(id, w.ownerUid, miCodigo)
+              }
             />
           ))}
         </ul>

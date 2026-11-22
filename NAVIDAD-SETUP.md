@@ -76,12 +76,15 @@ En Amplify → **Hosting → Environment variables**, agrega las mismas 6 variab
   link + título + precio/nota) y las tarjetas de los demás familiares.
 - **`/navidad/lista/:uid`** — lista de un familiar con botón **Ya se lo compré**.
   Es el link que se comparte (botón **Copiar link**). Requiere iniciar sesión.
-- Un producto comprado aparece atenuado, sin enlaces activos y con el estado
-  **Ya se lo compré**, en tiempo real para toda la familia. No se guarda quién lo
-  compró. Los productos existentes sin `comprado` siguen disponibles.
+- Cuando un familiar marca un producto, aparece atenuado y tachado (con el
+  estado **Ya se lo compré**) en tiempo real para los **demás** familiares. Es
+  anónimo: no se guarda quién lo compró.
+- **El dueño de la lista nunca ve qué le compraron.** El estado vive en una
+  colección aparte (`compras`, con el id del deseo) que las reglas impiden leer
+  al dueño; además su app ni siquiera la consulta. Así se conserva la sorpresa.
 - **Seguridad:** solo miembros con el mismo código familiar pueden ver las
-  listas. Cada quien edita/borra la suya; únicamente otro familiar puede marcar
-  un deseo como comprado, sin cambiar sus demás datos ni revertir el estado.
+  listas. Cada quien edita/borra sus deseos. Marcar como comprado solo lo puede
+  hacer otro familiar (no el dueño), es irreversible y no toca el deseo en sí.
 - **Desvincularme de la familia:** pide confirmación antes de quitar el código
   del perfil. Se conserva la sesión y los deseos; se vuelve a pedir un código.
   La familia anterior pierde acceso a la lista. Al unirse a otra familia, los

@@ -28,7 +28,6 @@ export interface Wish {
   precio?: string
   nota?: string
   createdAt: number
-  comprado?: boolean
 }
 
 export function detectarTienda(url: string): Tienda {

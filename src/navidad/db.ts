@@ -7,7 +7,6 @@ import {
   getDocs,
   onSnapshot,
   query,
-  runTransaction,
   setDoc,
   where,
 } from 'firebase/firestore'
@@ -19,6 +18,7 @@ import { detectarTienda } from './types'
 // porque `db` sólo existe cuando Firebase está configurado.
 const wishesRef = () => collection(db, 'wishes')
 const usersRef = () => collection(db, 'users')
+const comprasRef = () => collection(db, 'compras')
 
 export interface NuevoDeseo {
   titulo: string
@@ -52,15 +52,35 @@ export async function borrarDeseo(id: string) {
   await deleteDoc(doc(wishesRef(), id))
 }
 
-// Solo se guarda el estado: ningún dato de quien compró el regalo.
-export async function marcarDeseoComprado(id: string) {
-  const ref = doc(wishesRef(), id)
-  await runTransaction(db, async (transaction) => {
-    const snap = await transaction.get(ref)
-    if (!snap.exists()) throw new Error('El deseo ya no existe.')
-    if (snap.data().comprado === true) return
-    transaction.update(ref, { comprado: true })
+// El estado "comprado" vive en la colección `compras` (doc id = id del deseo),
+// que el dueño NO puede leer. Así nadie le revela qué le compraron.
+// No se guarda quién lo compró, solo que ya se compró.
+export async function marcarDeseoComprado(
+  wishId: string,
+  ownerUid: string,
+  familyCode: string,
+) {
+  await setDoc(doc(comprasRef(), wishId), {
+    ownerUid,
+    familyCode,
+    createdAt: Date.now(),
   })
+}
+
+// Escucha en tiempo real qué deseos de un familiar ya fueron comprados.
+// Devuelve un Set con los ids de los deseos comprados.
+// Las reglas impiden que el dueño lea esto sobre su propia lista.
+export function escucharComprasDe(
+  ownerUid: string,
+  cb: (compradas: Set<string>) => void,
+  onError?: (e: unknown) => void,
+) {
+  const q = query(comprasRef(), where('ownerUid', '==', ownerUid))
+  return onSnapshot(
+    q,
+    (snap) => cb(new Set(snap.docs.map((d) => d.id))),
+    onError,
+  )
 }
 
 // Escucha en tiempo real los deseos de un familiar.

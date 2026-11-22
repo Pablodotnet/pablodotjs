@@ -3,9 +3,10 @@ rules_version = '2';
 // Reglas para la app de Lista de Deseos Familiar.
 // - El acceso está limitado por "código familiar": cada quien sólo ve a los
 //   familiares y las listas que comparten su mismo familyCode.
-// - Cada quien edita/borra lo suyo; otros familiares pueden marcarlo comprado.
-// - comprado es un booleano opcional (ausente equivale a false).
-//   No se guarda la identidad de quien compra.
+// - Cada quien edita/borra sus deseos.
+// - El estado "comprado" vive en /compras (doc id = id del deseo): lo marca
+//   otro familiar, es anónimo, y el DUEÑO del deseo no puede leerlo (para no
+//   saber qué le compraron de su propia lista).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -42,23 +43,33 @@ service cloud.firestore {
                     && request.resource.data.familyCode == miFamilia()
                     && request.resource.data.keys().hasOnly([
                       'ownerUid', 'ownerName', 'familyCode', 'titulo', 'url',
-                      'tienda', 'precio', 'nota', 'createdAt', 'comprado'
-                    ])
-                    && request.resource.data.get('comprado', false) == false;
+                      'tienda', 'precio', 'nota', 'createdAt'
+                    ]);
+      // Sólo el dueño edita su deseo. El estado "comprado" NO se guarda aquí.
       allow update: if request.auth != null
-                    && (
-                      (request.auth.uid == resource.data.ownerUid
-                       && request.resource.data.diff(resource.data).affectedKeys()
-                           .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota']))
-                      || (request.auth.uid != resource.data.ownerUid
-                          && comparteFamilia(resource.data.ownerUid)
-                          && resource.data.get('comprado', false) == false
-                          && request.resource.data.comprado == true
-                          && request.resource.data.diff(resource.data).affectedKeys()
-                              .hasOnly(['comprado']))
-                    );
+                    && request.auth.uid == resource.data.ownerUid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota']);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.ownerUid;
+    }
+
+    // Estado "comprado" de cada deseo (doc id = id del deseo).
+    // El DUEÑO del deseo NO puede leer esto: así nunca sabe qué le compraron.
+    // Sólo otro familiar de la misma familia puede marcarlo, y es anónimo
+    // (no se guarda quién compró) e irreversible.
+    match /compras/{wishId} {
+      allow read: if request.auth != null
+                  && request.auth.uid != resource.data.ownerUid
+                  && comparteFamilia(resource.data.ownerUid);
+      allow create: if request.auth != null
+                    && request.auth.uid != request.resource.data.ownerUid
+                    && comparteFamilia(request.resource.data.ownerUid)
+                    && request.resource.data.familyCode == miFamilia()
+                    && get(/databases/$(database)/documents/wishes/$(wishId)).data.ownerUid
+                       == request.resource.data.ownerUid
+                    && request.resource.data.keys().hasOnly(['ownerUid', 'familyCode', 'createdAt']);
+      allow update, delete: if false;
     }
 
     // -------------------------------------------------------------------
