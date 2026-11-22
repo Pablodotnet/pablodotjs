@@ -22,6 +22,8 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 
 // Cuántas horas deben pasar para volver a revisar un producto ya actualizado.
 const HORAS_FRESCURA = 12
+// Backoff para productos sin precio: no insistir cada corrida (ahorra búsquedas).
+const HORAS_BACKOFF_SIN_PRECIO = 24
 const LIMITE = Number(process.env.PT_LIMITE ?? 25)
 
 function initAdmin() {
@@ -39,14 +41,17 @@ function initAdmin() {
 // Lista los productos que toca revisar en esta corrida.
 async function listar(db) {
   const ahora = Date.now()
-  const umbral = ahora - HORAS_FRESCURA * 60 * 60 * 1000
+  const umbralOk = ahora - HORAS_FRESCURA * 60 * 60 * 1000
+  const umbralSinPrecio = ahora - HORAS_BACKOFF_SIN_PRECIO * 60 * 60 * 1000
   const snap = await db.collection('products').get()
   const pendientes = []
   for (const doc of snap.docs) {
     const d = doc.data()
-    const frescoSuficiente =
-      d.estado === 'ok' && typeof d.actualizadoEn === 'number' && d.actualizadoEn > umbral
-    if (frescoSuficiente) continue
+    const act = typeof d.actualizadoEn === 'number' ? d.actualizadoEn : 0
+    // Ya actualizado hace poco: sáltalo.
+    if (d.estado === 'ok' && act > umbralOk) continue
+    // Sin precio reciente: espera el backoff antes de reintentar.
+    if (d.estado === 'sin_precio' && act > umbralSinPrecio) continue
     pendientes.push({
       id: doc.id,
       titulo: d.titulo ?? '',
@@ -80,7 +85,10 @@ async function marcarEnProceso(db, ids) {
 //       { "tienda": "walmart", "titulo": "...", "url": "https://...", "precio": 1150, "moneda": "MXN",
 //         "precioEfectivo": 1035, "msi": 18, "promos": ["10% con HSBC", "18 MSI"] }
 //     ]
-//   }
+//   },
+//   // Un producto sin precio confiable se reporta así para marcarlo "sin_precio"
+//   // (en vez de dejarlo colgado en "rastreando"):
+//   { "id": "<productId>", "sinPrecio": true, "motivo": "Página bloqueada / sin precio actual" }
 // ]
 //
 // mejorOpcion = menor "precio" de lista.
@@ -101,6 +109,25 @@ async function guardar(db, resultados) {
     const opciones = Array.isArray(r.opciones)
       ? r.opciones.filter((o) => o && typeof o.precio === 'number')
       : []
+
+    // Fallo explícito o sin ningún precio: marca "sin_precio" con el motivo y
+    // suma un intento (backoff en list evita insistir cada corrida).
+    const sinPrecio =
+      r.sinPrecio === true ||
+      (opciones.length === 0 && typeof r.precioBase !== 'number')
+    if (sinPrecio) {
+      await ref.set(
+        {
+          estado: 'sin_precio',
+          ultimoMotivo: r.motivo ?? 'No se encontró un precio confiable.',
+          intentos: FieldValue.increment(1),
+          actualizadoEn: Date.now(),
+        },
+        { merge: true },
+      )
+      ok++
+      continue
+    }
     const mejorOpcion =
       opciones.length > 0
         ? opciones.reduce((a, b) => (b.precio < a.precio ? b : a))
@@ -121,6 +148,8 @@ async function guardar(db, resultados) {
         mejorOpcion,
         mejorOferta,
         estado: 'ok',
+        intentos: 0,
+        ultimoMotivo: null,
         actualizadoEn: ahora,
       },
       { merge: true },

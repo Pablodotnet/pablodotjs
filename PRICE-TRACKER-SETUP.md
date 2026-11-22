@@ -24,7 +24,8 @@ products/{productId}
   mejorOpcion: Opcion | null // mejor PRECIO de lista       ← lo llena el task
   mejorOferta: Opcion | null // mejor COSTO REAL (promo + MSI) ← lo llena el task
   opciones: Opcion[]         // todas las alternativas de la última corrida ← task
-  estado: "pendiente"|"rastreando"|"ok"|"error"
+  estado: "pendiente"|"rastreando"|"ok"|"sin_precio"|"error"
+  intentos, ultimoMotivo   // sin_precio: corridas fallidas seguidas + por qué
   createdAt, actualizadoEn
 
 Opcion = {
@@ -105,6 +106,18 @@ Formato de `resultados.json` (lo arma Claude con lo que encuentra en la web):
 
 El script calcula solo la **mejor opción** (menor `precio`) y la **mejor oferta**
 (menor costo real = `precioEfectivo` o `precio`). Claude solo aporta los datos.
+
+Para un producto **sin precio confiable**, la entrada se marca y el script lo pone
+en estado `sin_precio` (en vez de dejarlo colgado en `rastreando`). El `list`
+aplica un **backoff de 24 h** antes de reintentarlo:
+
+```json
+{ "id": "<productId>", "sinPrecio": true, "motivo": "Amazon bloqueó la página; sin precio actual" }
+```
+
+Tiendas MX que reconoce la detección y busca el task: Amazon, Mercado Libre,
+Walmart, Liverpool, Coppel, AliExpress, Costco, Sam's Club, CyberPuerta, DDTech,
+PCEL, Sears, Elektra, Palacio de Hierro.
 
 ## 5. Crear la tarea programada en Claude
 

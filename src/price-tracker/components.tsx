@@ -92,12 +92,14 @@ function EstadoBadge({ producto }: { producto: Producto }) {
     pendiente: 'bg-amber-50 text-amber-700',
     rastreando: 'bg-blue-50 text-blue-700',
     ok: 'bg-emerald-50 text-emerald-700',
+    sin_precio: 'bg-gray-100 text-gray-600',
     error: 'bg-red-50 text-red-700',
   }
   const texto: Record<string, string> = {
     pendiente: 'En cola',
     rastreando: 'Rastreando…',
     ok: 'Actualizado',
+    sin_precio: 'Sin precio',
     error: 'Error',
   }
   return (
@@ -185,6 +187,13 @@ export function ProductCard({
           {producto.estado === 'pendiente' && (
             <p className="mt-2 text-xs text-gray-500">
               Se buscarán precios y alternativas en la próxima corrida del rastreador.
+            </p>
+          )}
+
+          {producto.estado === 'sin_precio' && (
+            <p className="mt-2 text-xs text-gray-500">
+              {producto.ultimoMotivo ?? 'No se encontró un precio confiable.'} Se
+              reintentará más tarde.
             </p>
           )}
         </div>

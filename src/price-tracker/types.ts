@@ -6,6 +6,14 @@ export type Tienda =
   | 'liverpool'
   | 'coppel'
   | 'aliexpress'
+  | 'costco'
+  | 'samsclub'
+  | 'cyberpuerta'
+  | 'ddtech'
+  | 'pcel'
+  | 'sears'
+  | 'elektra'
+  | 'palacio'
   | 'otro'
 
 // Una opción encontrada por el task en alguna tienda (incluida la base).
@@ -39,7 +47,12 @@ export interface HistorialPrecio {
   moneda: string
 }
 
-export type EstadoProducto = 'pendiente' | 'rastreando' | 'ok' | 'error'
+export type EstadoProducto =
+  | 'pendiente'
+  | 'rastreando'
+  | 'ok'
+  | 'sin_precio' // el task no encontró un precio confiable (ver ultimoMotivo)
+  | 'error'
 
 export interface Producto {
   id: string
@@ -54,6 +67,8 @@ export interface Producto {
   mejorOferta: Opcion | null // mejor COSTO REAL (precio + promo bancaria/MSI/cupón)
   opciones: Opcion[] // todas las alternativas encontradas en la última corrida
   estado: EstadoProducto
+  intentos?: number // corridas seguidas sin encontrar precio (se reinicia al lograrlo)
+  ultimoMotivo?: string | null // por qué no se encontró precio en la última corrida
   createdAt: number
   actualizadoEn: number | null // timestamp de la última corrida del task
 }
@@ -73,7 +88,15 @@ export function detectarTienda(url: string): Tienda {
   if (u.includes('walmart.')) return 'walmart'
   if (u.includes('liverpool.')) return 'liverpool'
   if (u.includes('coppel.')) return 'coppel'
-  if (u.includes('aliexpress.') || u.includes('aliexpress.us')) return 'aliexpress'
+  if (u.includes('aliexpress.')) return 'aliexpress'
+  if (u.includes('costco.')) return 'costco'
+  if (u.includes('sams.com') || u.includes('samsclub.')) return 'samsclub'
+  if (u.includes('cyberpuerta.')) return 'cyberpuerta'
+  if (u.includes('ddtech.')) return 'ddtech'
+  if (u.includes('pcel.')) return 'pcel'
+  if (u.includes('sears.com')) return 'sears'
+  if (u.includes('elektra.')) return 'elektra'
+  if (u.includes('palaciodehierro.') || u.includes('elpalaciodehierro.')) return 'palacio'
   return 'otro'
 }
 
@@ -88,6 +111,14 @@ export const TIENDA_META: Record<
   liverpool: { label: 'Liverpool', color: '#E5007E', ink: '#BE185D' },
   coppel: { label: 'Coppel', color: '#00539F', ink: '#1E40AF' },
   aliexpress: { label: 'AliExpress', color: '#FF4747', ink: '#DC2626' },
+  costco: { label: 'Costco', color: '#E31837', ink: '#B91C1C' },
+  samsclub: { label: "Sam's Club", color: '#0067A0', ink: '#1D4ED8' },
+  cyberpuerta: { label: 'CyberPuerta', color: '#F7941E', ink: '#C2410C' },
+  ddtech: { label: 'DDTech', color: '#1565C0', ink: '#1D4ED8' },
+  pcel: { label: 'PCEL', color: '#D32027', ink: '#B91C1C' },
+  sears: { label: 'Sears', color: '#004B91', ink: '#1E40AF' },
+  elektra: { label: 'Elektra', color: '#F58220', ink: '#C2410C' },
+  palacio: { label: 'Palacio de Hierro', color: '#B8860B', ink: '#92400E' },
   otro: { label: 'Enlace', color: '#00E5FF', ink: '#0E7490' },
 }
 

@@ -43,6 +43,8 @@ export async function agregarProducto(
     mejorOferta: null,
     opciones: [],
     estado: 'pendiente',
+    intentos: 0,
+    ultimoMotivo: null,
     createdAt: Date.now(),
     actualizadoEn: null,
   })
