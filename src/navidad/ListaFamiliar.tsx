@@ -91,6 +91,12 @@ export default function ListaFamiliar() {
 
   return (
     <NavidadShell>
+      <Link
+        to="/navidad"
+        className="mb-4 inline-flex items-center gap-1 font-mono text-sm text-cyan-700 hover:underline"
+      >
+        ← Volver a mi familia
+      </Link>
       <div className="mb-6 flex items-center gap-3">
         {familiar?.foto ? (
           <img
