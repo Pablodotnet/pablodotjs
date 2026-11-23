@@ -148,6 +148,7 @@ function MiLista({
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
   const [copia, setCopia] = useState<'idle' | 'copiando' | 'copiado' | 'error'>('idle')
+  const [minimizada, setMinimizada] = useState(false)
   const miLink = `${window.location.origin}/navidad/lista/${uid}`
 
   useEffect(() => {
@@ -194,7 +195,23 @@ function MiLista({
   return (
     <section className="mb-10">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">Mi lista de deseos</h2>
+        <button
+          type="button"
+          onClick={() => setMinimizada((v) => !v)}
+          aria-expanded={!minimizada}
+          className="flex items-center gap-2 text-lg font-semibold transition-colors hover:text-cyan-700"
+        >
+          <span
+            aria-hidden
+            className={`inline-block text-sm text-gray-400 transition-transform ${minimizada ? '' : 'rotate-90'}`}
+          >
+            ▶
+          </span>
+          Mi lista de deseos
+          {minimizada && deseos.length > 0 && (
+            <span className="font-mono text-xs font-normal text-gray-400">({deseos.length})</span>
+          )}
+        </button>
         <button
           type="button"
           onClick={copiarMiLink}
@@ -204,6 +221,8 @@ function MiLista({
           {copia === 'copiado' ? '¡Link copiado!' : copia === 'copiando' ? 'Copiando…' : 'Copiar mi link'}
         </button>
       </div>
+      {minimizada ? null : (
+      <>
       <div aria-live="polite">
         {copia === 'copiado' && <p className="mb-3 text-sm text-cyan-800">Enlace de tu lista copiado para compartir.</p>}
         {copia === 'error' && (
@@ -263,6 +282,8 @@ function MiLista({
             <WishCard key={w.id} wish={w} onBorrar={borrarDeseo} />
           ))}
         </ul>
+      )}
+      </>
       )}
     </section>
   )
