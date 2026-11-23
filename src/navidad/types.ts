@@ -4,8 +4,21 @@ export interface FamilyUser {
   uid: string
   nombre: string
   foto: string | null
+  // Una persona puede pertenecer a varias familias a la vez.
+  familyCodes?: string[]
+  // Campo antiguo (una sola familia). Se conserva solo para migrar a familyCodes.
   familyCode?: string
   ultimoAcceso?: number
+}
+
+// Devuelve las familias a las que pertenece un perfil, normalizando el modelo
+// antiguo (familyCode único) al nuevo (familyCodes[]).
+export function familiasDe(
+  perfil: { familyCodes?: string[]; familyCode?: string } | null | undefined,
+): string[] {
+  if (!perfil) return []
+  if (Array.isArray(perfil.familyCodes)) return perfil.familyCodes
+  return perfil.familyCode ? [perfil.familyCode] : []
 }
 
 // Normaliza el código familiar para que "Lopez Navidad" == "lopez-navidad".

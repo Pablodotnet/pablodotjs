@@ -5,7 +5,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
-import { deleteField, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db, googleProvider, firebaseReady } from '../lib/firebase'
 import type { FamilyUser } from './types'
 import { normalizarCodigo } from './types'
@@ -18,7 +18,7 @@ interface AuthState {
   entrarConGoogle: () => Promise<void>
   salir: () => Promise<void>
   guardarCodigoFamiliar: (code: string) => Promise<void>
-  desvincularFamilia: () => Promise<void>
+  desvincularFamilia: (code: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -67,7 +67,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     return onSnapshot(
       doc(db, 'users', user.uid),
-      (snap) => setPerfil(snap.exists() ? (snap.data() as FamilyUser) : null),
+      (snap) => {
+        if (!snap.exists()) {
+          setPerfil(null)
+          return
+        }
+        const data = snap.data() as FamilyUser
+        setPerfil(data)
+        // Migración del modelo antiguo (familyCode único) al nuevo (familyCodes[]).
+        if (!Array.isArray(data.familyCodes) && data.familyCode) {
+          updateDoc(doc(db, 'users', user.uid), {
+            familyCodes: arrayUnion(normalizarCodigo(data.familyCode)),
+          }).catch((e) => console.error('No se pudo migrar las familias', e))
+        }
+      },
       (e) => console.error('No se pudo leer el perfil', e),
     )
   }, [user])
@@ -80,16 +93,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth)
   }
 
+  // Une al usuario a una familia (aditivo: puede pertenecer a varias).
   async function guardarCodigoFamiliar(code: string) {
     if (!user) return
     const familyCode = normalizarCodigo(code)
     if (!familyCode) throw new Error('Código inválido')
-    await setDoc(doc(db, 'users', user.uid), { familyCode }, { merge: true })
+    await setDoc(
+      doc(db, 'users', user.uid),
+      { familyCodes: arrayUnion(familyCode) },
+      { merge: true },
+    )
   }
 
-  async function desvincularFamilia() {
+  // Quita al usuario de una familia específica.
+  async function desvincularFamilia(code: string) {
     if (!user) throw new Error('Debes iniciar sesión.')
-    await updateDoc(doc(db, 'users', user.uid), { familyCode: deleteField() })
+    await updateDoc(doc(db, 'users', user.uid), { familyCodes: arrayRemove(code) })
   }
 
   return (

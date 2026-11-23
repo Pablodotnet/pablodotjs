@@ -1,8 +1,9 @@
 rules_version = '2';
 
 // Reglas para la app de Lista de Deseos Familiar.
-// - El acceso está limitado por "código familiar": cada quien sólo ve a los
-//   familiares y las listas que comparten su mismo familyCode.
+// - El acceso está limitado por "códigos familiares": cada quien puede
+//   pertenecer a varias familias (familyCodes[]) y sólo ve a los familiares y
+//   las listas de quienes comparten AL MENOS UNO de sus códigos.
 // - Cada quien edita/borra sus deseos.
 // - El estado "comprado" vive en /compras (doc id = id del deseo): lo marca
 //   otro familiar, es anónimo, y el DUEÑO del deseo no puede leerlo (para no
@@ -10,39 +11,40 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Código familiar del usuario que hace la petición.
-    function miFamilia() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('familyCode', '');
+    // Familias (códigos) del usuario que hace la petición.
+    function misFamilias() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('familyCodes', []);
     }
 
     // Consultar el perfil actual evita que una lista siga compartida al salir.
-    // familyCode en los deseos antiguos no determina la pertenencia actual.
+    // Compartimos familia si nuestros códigos se intersectan con los del otro.
     function comparteFamilia(uid) {
-      return miFamilia() != ''
-             && get(/databases/$(database)/documents/users/$(uid)).data.get('familyCode', '') == miFamilia();
+      return misFamilias().size() > 0
+             && get(/databases/$(database)/documents/users/$(uid)).data.get('familyCodes', []).hasAny(misFamilias());
     }
 
     // Perfiles de los familiares.
     match /users/{uid} {
-      // Puedo leer mi propio perfil siempre, y el de quienes comparten mi familyCode.
+      // Puedo leer mi propio perfil siempre, y el de quienes comparten alguna familia.
       allow read: if request.auth != null
                   && (request.auth.uid == uid
-                      || (miFamilia() != '' && resource.data.get('familyCode', '') == miFamilia()));
+                      || (misFamilias().size() > 0
+                          && resource.data.get('familyCodes', []).hasAny(misFamilias())));
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
     // Deseos de la lista.
     match /wishes/{wishId} {
-      // Puedo leer mis propios deseos, y los de mi misma familia.
+      // Puedo leer mis propios deseos, y los de quienes comparten alguna familia.
       allow read: if request.auth != null
                   && (request.auth.uid == resource.data.ownerUid
                       || comparteFamilia(resource.data.ownerUid));
+      // Un deseo es mío y lo ven todas mis familias; no se etiqueta con una sola.
       allow create: if request.auth != null
                     && request.auth.uid == request.resource.data.ownerUid
-                    && miFamilia() != ''
-                    && request.resource.data.familyCode == miFamilia()
+                    && misFamilias().size() > 0
                     && request.resource.data.keys().hasOnly([
-                      'ownerUid', 'ownerName', 'familyCode', 'titulo', 'url',
+                      'ownerUid', 'ownerName', 'titulo', 'url',
                       'tienda', 'precio', 'nota', 'createdAt'
                     ]);
       // Sólo el dueño edita su deseo. El estado "comprado" NO se guarda aquí.
@@ -56,8 +58,8 @@ service cloud.firestore {
 
     // Estado "comprado" de cada deseo (doc id = id del deseo).
     // El DUEÑO del deseo NO puede leer esto: así nunca sabe qué le compraron.
-    // Sólo otro familiar de la misma familia puede marcarlo, y es anónimo
-    // (no se guarda quién compró) e irreversible.
+    // Sólo otro familiar que comparta alguna familia puede marcarlo, y es
+    // anónimo (no se guarda quién compró) e irreversible.
     match /compras/{wishId} {
       allow read: if request.auth != null
                   && request.auth.uid != resource.data.ownerUid
@@ -65,10 +67,9 @@ service cloud.firestore {
       allow create: if request.auth != null
                     && request.auth.uid != request.resource.data.ownerUid
                     && comparteFamilia(request.resource.data.ownerUid)
-                    && request.resource.data.familyCode == miFamilia()
                     && get(/databases/$(database)/documents/wishes/$(wishId)).data.ownerUid
                        == request.resource.data.ownerUid
-                    && request.resource.data.keys().hasOnly(['ownerUid', 'familyCode', 'createdAt']);
+                    && request.resource.data.keys().hasOnly(['ownerUid', 'createdAt']);
       allow update, delete: if false;
     }
 

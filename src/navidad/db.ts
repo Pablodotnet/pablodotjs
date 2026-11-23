@@ -26,20 +26,16 @@ export interface NuevoDeseo {
   nota?: string
 }
 
-export async function setCodigoFamiliar(uid: string, familyCode: string) {
-  await setDoc(doc(usersRef(), uid), { familyCode }, { merge: true })
-}
-
+// Un deseo pertenece a su dueño y lo ven todas sus familias; por eso no se
+// etiqueta con un código familiar concreto.
 export async function agregarDeseo(
   ownerUid: string,
   ownerName: string,
-  familyCode: string,
   datos: NuevoDeseo,
 ) {
   await addDoc(wishesRef(), {
     ownerUid,
     ownerName,
-    familyCode,
     titulo: datos.titulo.trim(),
     url: datos.url.trim(),
     tienda: detectarTienda(datos.url),
@@ -55,14 +51,9 @@ export async function borrarDeseo(id: string) {
 // El estado "comprado" vive en la colección `compras` (doc id = id del deseo),
 // que el dueño NO puede leer. Así nadie le revela qué le compraron.
 // No se guarda quién lo compró, solo que ya se compró.
-export async function marcarDeseoComprado(
-  wishId: string,
-  ownerUid: string,
-  familyCode: string,
-) {
+export async function marcarDeseoComprado(wishId: string, ownerUid: string) {
   await setDoc(doc(comprasRef(), wishId), {
     ownerUid,
-    familyCode,
     createdAt: Date.now(),
   })
 }
@@ -103,9 +94,14 @@ export function escucharDeseosDe(
   )
 }
 
-// Lista a los familiares que comparten el mismo código.
-export async function listarFamiliares(familyCode: string): Promise<FamilyUser[]> {
-  const q = query(usersRef(), where('familyCode', '==', familyCode))
+// Lista a los familiares que comparten AL MENOS UNA de las familias dadas.
+// Firestore limita array-contains-any a 10 valores; tomamos los primeros 10.
+export async function listarFamiliaresDe(codes: string[]): Promise<FamilyUser[]> {
+  if (codes.length === 0) return []
+  const q = query(
+    usersRef(),
+    where('familyCodes', 'array-contains-any', codes.slice(0, 10)),
+  )
   const snap = await getDocs(q)
   const familiares = snap.docs.map((d) => d.data() as FamilyUser)
   familiares.sort((a, b) => a.nombre.localeCompare(b.nombre))

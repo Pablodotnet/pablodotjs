@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from './auth'
 import { escucharComprasDe, escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
-import type { FamilyUser, Wish } from './types'
+import { familiasDe, type FamilyUser, type Wish } from './types'
 import { NavidadShell, WishCard } from './components'
 
 export default function ListaFamiliar() {
@@ -14,12 +14,13 @@ export default function ListaFamiliar() {
   const [cargando, setCargando] = useState(true)
   const [denegado, setDenegado] = useState(false)
 
-  const miCodigo = perfil?.familyCode
+  const misFamilias = familiasDe(perfil)
+  const clave = misFamilias.join(',')
   // Si es mi propio link, es mi lista: nunca debo ver qué me compraron.
   const esMiLista = !!perfil?.uid && perfil.uid === uid
 
   useEffect(() => {
-    if (!uid || !miCodigo) return
+    if (!uid || misFamilias.length === 0) return
     let activo = true
     setCargando(true)
     setDenegado(false)
@@ -28,8 +29,8 @@ export default function ListaFamiliar() {
       .then((f) => {
         if (!activo) return
         setFamiliar(f)
-        // Solo se puede ver si comparte el mismo código familiar.
-        if (!f || f.familyCode !== miCodigo) {
+        // Solo se puede ver si comparte al menos una familia conmigo.
+        if (!f || !familiasDe(f).some((c) => misFamilias.includes(c))) {
           setDenegado(true)
           setCargando(false)
         }
@@ -61,14 +62,16 @@ export default function ListaFamiliar() {
       activo = false
       unsub()
     }
-  }, [uid, miCodigo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid, clave])
 
   // Qué deseos ya fueron comprados (solo si NO es mi propia lista).
   useEffect(() => {
     setCompradas(new Set())
-    if (!uid || !miCodigo || esMiLista) return
+    if (!uid || misFamilias.length === 0 || esMiLista) return
     return escucharComprasDe(uid, setCompradas, (e) => console.error(e))
-  }, [uid, miCodigo, esMiLista])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid, clave, esMiLista])
 
   if (denegado) {
     return (
@@ -77,7 +80,7 @@ export default function ListaFamiliar() {
           <div className="mb-4 text-4xl">🚫</div>
           <h1 className="mb-2 text-xl font-semibold">Esta lista no es de tu familia</h1>
           <p className="mb-6 text-sm text-gray-600">
-            Solo puedes ver las listas de quienes comparten tu código familiar.
+            Solo puedes ver las listas de quienes comparten alguna de tus familias.
           </p>
           <Link to="/navidad" className="font-mono text-sm text-cyan-700 hover:underline">
             ← Volver a mi familia
@@ -130,9 +133,9 @@ export default function ListaFamiliar() {
               wish={w}
               comprado={esMiLista ? false : compradas.has(w.id)}
               onComprar={
-                esMiLista || !miCodigo
+                esMiLista || misFamilias.length === 0
                   ? undefined
-                  : (id) => marcarDeseoComprado(id, w.ownerUid, miCodigo)
+                  : (id) => marcarDeseoComprado(id, w.ownerUid)
               }
             />
           ))}

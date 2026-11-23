@@ -1,145 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from './auth'
 import {
   agregarDeseo,
   borrarDeseo,
   escucharDeseosDe,
-  listarFamiliares,
+  listarFamiliaresDe,
 } from './db'
-import type { FamilyUser, Wish } from './types'
+import { familiasDe, type FamilyUser, type Wish } from './types'
 import { Boton, NavidadShell, WishCard } from './components'
 
 export default function NavidadApp() {
-  const { user, perfil, salir, desvincularFamilia } = useAuth()
-  if (!user || !perfil?.familyCode) return null
-
-  const familyCode = perfil.familyCode
+  const { user, perfil } = useAuth()
+  const familias = familiasDe(perfil)
+  if (!user || familias.length === 0) return null
 
   return (
     <NavidadShell>
-      <div className="mb-6 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          {user.photoURL && (
-            <img
-              src={user.photoURL}
-              alt=""
-              referrerPolicy="no-referrer"
-              className="h-9 w-9 rounded-full border border-gray-200"
-            />
-          )}
-          <div>
-            <p className="text-sm font-medium">{user.displayName}</p>
-            <p className="font-mono text-xs text-gray-500">
-              Familia:{' '}
-              <span className="rounded bg-cyan-50 px-1.5 py-0.5 text-cyan-700">
-                {familyCode}
-              </span>
-            </p>
-            <DesvincularFamilia familyCode={familyCode} onDesvincular={desvincularFamilia} />
-          </div>
-        </div>
-        <button
-          onClick={salir}
-          className="font-mono text-xs text-gray-500 transition-colors hover:text-gray-900"
-        >
-          Salir
-        </button>
-      </div>
-
-      <MiLista
-        uid={user.uid}
-        nombre={user.displayName ?? 'Sin nombre'}
-        familyCode={familyCode}
-      />
-      <Familia miUid={user.uid} familyCode={familyCode} />
+      <MiLista uid={user.uid} nombre={user.displayName ?? 'Sin nombre'} />
+      <Familia miUid={user.uid} familias={familias} />
     </NavidadShell>
-  )
-}
-
-function DesvincularFamilia({
-  familyCode,
-  onDesvincular,
-}: {
-  familyCode: string
-  onDesvincular: () => Promise<void>
-}) {
-  const dialog = useRef<HTMLDialogElement>(null)
-  const [guardando, setGuardando] = useState(false)
-  const [error, setError] = useState('')
-
-  async function confirmar() {
-    if (guardando) return
-    setGuardando(true)
-    setError('')
-    try {
-      await onDesvincular()
-      dialog.current?.close()
-    } catch {
-      setError('No se pudo desvincular de la familia. Intenta de nuevo.')
-    } finally {
-      setGuardando(false)
-    }
-  }
-
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => {
-          setError('')
-          dialog.current?.showModal()
-        }}
-        className="mt-1 text-xs text-red-700 hover:underline"
-      >
-        Desvincularme de la familia
-      </button>
-      <dialog
-        ref={dialog}
-        aria-labelledby="desvincular-titulo"
-        aria-describedby="desvincular-descripcion"
-        aria-busy={guardando}
-        onCancel={(e) => { if (guardando) e.preventDefault() }}
-        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-gray-200 bg-white p-6 text-gray-900 shadow-xl backdrop:bg-black/40"
-      >
-        <h2 id="desvincular-titulo" className="text-lg font-semibold">¿Desvincularte de la familia?</h2>
-        <p id="desvincular-descripcion" className="mt-3 text-sm text-gray-600">
-          Saldrás de la familia <strong className="break-all">{familyCode}</strong> y dejarán de compartir sus listas contigo.
-          Tus deseos se conservarán. Podrás ingresar un código para volver a unirte o entrar a otra familia.
-        </p>
-        {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
-        <div className="mt-6 flex flex-wrap justify-end gap-3">
-          <button
-            type="button"
-            autoFocus
-            disabled={guardando}
-            onClick={() => dialog.current?.close()}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            disabled={guardando}
-            onClick={confirmar}
-            className="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 disabled:cursor-wait disabled:opacity-50"
-          >
-            {guardando ? 'Desvinculando…' : 'Sí, desvincularme'}
-          </button>
-        </div>
-      </dialog>
-    </>
   )
 }
 
 function MiLista({
   uid,
   nombre,
-  familyCode,
 }: {
   uid: string
   nombre: string
-  familyCode: string
 }) {
   const [deseos, setDeseos] = useState<Wish[]>([])
   const [url, setUrl] = useState('')
@@ -172,7 +61,7 @@ function MiLista({
       console.error(e)
       setError('No se pudieron cargar tus deseos.')
     })
-  }, [uid, familyCode])
+  }, [uid])
 
   async function onAgregar(e: React.FormEvent) {
     e.preventDefault()
@@ -180,7 +69,7 @@ function MiLista({
     setGuardando(true)
     setError('')
     try {
-      await agregarDeseo(uid, nombre, familyCode, { url, titulo, nota })
+      await agregarDeseo(uid, nombre, { url, titulo, nota })
       setUrl('')
       setTitulo('')
       setNota('')
@@ -289,18 +178,20 @@ function MiLista({
   )
 }
 
-function Familia({ miUid, familyCode }: { miUid: string; familyCode: string }) {
+function Familia({ miUid, familias }: { miUid: string; familias: string[] }) {
   const [familiares, setFamiliares] = useState<FamilyUser[]>([])
   const [cargando, setCargando] = useState(true)
   const [copiado, setCopiado] = useState<string | null>(null)
+  const clave = familias.join(',')
 
   useEffect(() => {
     setCargando(true)
-    listarFamiliares(familyCode)
+    listarFamiliaresDe(familias)
       .then(setFamiliares)
       .catch(console.error)
       .finally(() => setCargando(false))
-  }, [familyCode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clave])
 
   function copiarLink(uid: string) {
     const link = `${window.location.origin}/navidad/lista/${uid}`
@@ -318,9 +209,15 @@ function Familia({ miUid, familyCode }: { miUid: string; familyCode: string }) {
         <p className="text-sm text-gray-500">Cargando familiares…</p>
       ) : otros.length === 0 ? (
         <p className="text-sm text-gray-500">
-          Todavía nadie más ha entrado con el código{' '}
-          <span className="font-mono text-cyan-700">{familyCode}</span>. Compártelo con
-          tu familia junto con el link de esta app.
+          Todavía nadie más ha entrado con{' '}
+          {familias.length === 1 ? 'el código' : 'tus códigos'}{' '}
+          {familias.map((c, i) => (
+            <span key={c}>
+              {i > 0 && ', '}
+              <span className="font-mono text-cyan-700">{c}</span>
+            </span>
+          ))}
+          . Compártelo con tu familia junto con el link de esta app.
         </p>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">

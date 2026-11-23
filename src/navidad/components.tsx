@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from './auth'
 import { TIENDA_META, type Tienda, type Wish } from './types'
 
 export function TiendaBadge({ tienda }: { tienda: Tienda }) {
@@ -18,14 +19,98 @@ export function NavidadShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-4">
           <Link to="/navidad" className="flex items-center gap-2 font-mono text-sm">
             <span>🎄</span>
             <span className="font-semibold">Lista de Deseos</span>
           </Link>
+          <AccountMenu />
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
+    </div>
+  )
+}
+
+// Menú de cuenta en el nav: aparece sólo con sesión iniciada. Lleva a la
+// página de cuenta y permite cerrar sesión directamente.
+function AccountMenu() {
+  const { user, salir } = useAuth()
+  const [abierto, setAbierto] = useState(false)
+  const contenedor = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!abierto) return
+    function alClicFuera(e: MouseEvent) {
+      if (contenedor.current && !contenedor.current.contains(e.target as Node)) {
+        setAbierto(false)
+      }
+    }
+    function alEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setAbierto(false)
+    }
+    document.addEventListener('mousedown', alClicFuera)
+    document.addEventListener('keydown', alEscape)
+    return () => {
+      document.removeEventListener('mousedown', alClicFuera)
+      document.removeEventListener('keydown', alEscape)
+    }
+  }, [abierto])
+
+  if (!user) return null
+
+  const nombre = user.displayName ?? 'Mi cuenta'
+
+  return (
+    <div ref={contenedor} className="relative">
+      <button
+        type="button"
+        onClick={() => setAbierto((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={abierto}
+        className="flex items-center gap-2 rounded-full border border-gray-200 py-1 pl-1 pr-2 text-sm transition-colors hover:border-gray-300"
+      >
+        {user.photoURL ? (
+          <img
+            src={user.photoURL}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="h-7 w-7 rounded-full"
+          />
+        ) : (
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-xs text-gray-700">
+            {nombre.charAt(0)}
+          </span>
+        )}
+        <span className="hidden max-w-[10rem] truncate font-medium sm:inline">{nombre}</span>
+        <span aria-hidden className="text-xs text-gray-400">▾</span>
+      </button>
+      {abierto && (
+        <div
+          role="menu"
+          className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+        >
+          <Link
+            to="/navidad/cuenta"
+            role="menuitem"
+            onClick={() => setAbierto(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            Mi cuenta
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setAbierto(false)
+              salir().catch(console.error)
+            }}
+            className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      )}
     </div>
   )
 }
