@@ -10,8 +10,7 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore'
-import { httpsCallable } from 'firebase/functions'
-import { db, functions } from '../lib/firebase'
+import { db } from '../lib/firebase'
 import type { FamilyUser, Wish } from './types'
 import { detectarTienda } from './types'
 
@@ -25,24 +24,6 @@ export interface NuevoDeseo {
   titulo: string
   url: string
   nota?: string
-  imagen?: string
-}
-
-// Pide a la Cloud Function la imagen (og:image) del producto. Best-effort:
-// devuelve null si la tienda bloquea la lectura o no hay imagen.
-export async function obtenerImagenProducto(url: string): Promise<string | null> {
-  if (!functions) return null
-  try {
-    const llamar = httpsCallable<{ url: string }, { imagen: string | null }>(
-      functions,
-      'obtenerImagenProducto',
-    )
-    const res = await llamar({ url })
-    return res.data?.imagen ?? null
-  } catch (e) {
-    console.error('No se pudo obtener la imagen del producto', e)
-    return null
-  }
 }
 
 // Un deseo pertenece a su dueño y lo ven todas sus familias; por eso no se
@@ -52,7 +33,6 @@ export async function agregarDeseo(
   ownerName: string,
   datos: NuevoDeseo,
 ) {
-  const imagen = datos.imagen?.trim()
   await addDoc(wishesRef(), {
     ownerUid,
     ownerName,
@@ -60,8 +40,6 @@ export async function agregarDeseo(
     url: datos.url.trim(),
     tienda: detectarTienda(datos.url),
     nota: datos.nota?.trim() || '',
-    // Solo guardamos imagen si existe (Firestore no acepta undefined).
-    ...(imagen ? { imagen } : {}),
     createdAt: Date.now(),
   })
 }

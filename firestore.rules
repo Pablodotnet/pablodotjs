@@ -45,13 +45,13 @@ service cloud.firestore {
                     && misFamilias().size() > 0
                     && request.resource.data.keys().hasOnly([
                       'ownerUid', 'ownerName', 'titulo', 'url',
-                      'tienda', 'precio', 'nota', 'imagen', 'createdAt'
+                      'tienda', 'precio', 'nota', 'createdAt'
                     ]);
       // Sólo el dueño edita su deseo. El estado "comprado" NO se guarda aquí.
       allow update: if request.auth != null
                     && request.auth.uid == resource.data.ownerUid
                     && request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota', 'imagen']);
+                        .hasOnly(['titulo', 'url', 'tienda', 'precio', 'nota']);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.ownerUid;
     }

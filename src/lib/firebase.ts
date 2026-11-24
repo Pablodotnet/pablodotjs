@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
-import { getFunctions, type Functions } from 'firebase/functions'
 
 // Las credenciales se leen de variables de entorno (archivo .env.local).
 // Nunca se suben al repositorio. Ver .env.example para la plantilla.
@@ -25,4 +24,3 @@ export const db = (firebaseReady ? getFirestore(app!) : undefined) as Firestore
 export const googleProvider = (
   firebaseReady ? new GoogleAuthProvider() : undefined
 ) as GoogleAuthProvider
-export const functions = (firebaseReady ? getFunctions(app!) : undefined) as Functions

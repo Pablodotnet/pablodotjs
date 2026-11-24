@@ -147,25 +147,6 @@ export function WishCard({
   return (
     <li className={`group rounded-xl border border-gray-200 p-4 shadow-sm transition-colors ${comprado ? 'bg-gray-100' : 'bg-white hover:border-gray-300'}`}>
       <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-        {wish.imagen && (
-          <a
-            href={wish.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0"
-            tabIndex={-1}
-            aria-hidden
-          >
-            <img
-              src={wish.imagen}
-              alt=""
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              className={`h-16 w-16 rounded-lg border border-gray-200 bg-white object-contain ${comprado ? 'opacity-50 grayscale' : ''}`}
-            />
-          </a>
-        )}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
             <TiendaBadge tienda={wish.tienda} />
@@ -215,7 +196,6 @@ export function WishCard({
             </div>
           )}
           {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
-        </div>
         </div>
         {onBorrar && (
           <button
