@@ -40,6 +40,7 @@ export interface Wish {
   tienda: Tienda
   precio?: string
   nota?: string
+  imagen?: string
   createdAt: number
 }
 

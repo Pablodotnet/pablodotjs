@@ -6,6 +6,7 @@ import {
   borrarDeseo,
   escucharDeseosDe,
   listarFamiliaresDe,
+  obtenerImagenProducto,
 } from './db'
 import { familiasDe, type FamilyUser, type Wish } from './types'
 import { Boton, NavidadShell, WishCard } from './components'
@@ -69,7 +70,9 @@ function MiLista({
     setGuardando(true)
     setError('')
     try {
-      await agregarDeseo(uid, nombre, { url, titulo, nota })
+      // Best-effort: buscamos la imagen del producto. Si no hay, se guarda igual.
+      const imagen = (await obtenerImagenProducto(url.trim())) ?? undefined
+      await agregarDeseo(uid, nombre, { url, titulo, nota, imagen })
       setUrl('')
       setTitulo('')
       setNota('')
