@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Boton, NavidadShell } from './components'
+import { Button, NavidadShell } from './components'
 
-export function Cargando() {
+export function Loading() {
   return (
     <NavidadShell>
       <p className="py-16 text-center text-sm text-gray-500">Cargando…</p>
@@ -9,7 +9,7 @@ export function Cargando() {
   )
 }
 
-export function ConfigFaltante() {
+export function MissingConfig() {
   return (
     <NavidadShell>
       <div className="mx-auto max-w-md py-16 text-center">
@@ -26,11 +26,11 @@ export function ConfigFaltante() {
   )
 }
 
-export function Bienvenida({ onEntrar }: { onEntrar: () => Promise<void> }) {
+export function Welcome({ onSignIn }: { onSignIn: () => Promise<void> }) {
   const [error, setError] = useState('')
-  async function entrar() {
+  async function signIn() {
     try {
-      await onEntrar()
+      await onSignIn()
     } catch (e) {
       console.error(e)
       setError('No se pudo iniciar sesión. Intenta de nuevo.')
@@ -45,38 +45,38 @@ export function Bienvenida({ onEntrar }: { onEntrar: () => Promise<void> }) {
           Entra con tu cuenta de Google, arma tu lista de deseos con links de Amazon o
           Mercado Libre, y comparte el enlace con la familia para esta Navidad. 🎁
         </p>
-        <Boton onClick={entrar} className="px-6 py-3">
+        <Button onClick={signIn} className="px-6 py-3">
           Entrar con Google
-        </Boton>
+        </Button>
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </div>
     </NavidadShell>
   )
 }
 
-export function CodigoFamiliar({
-  onGuardar,
-  onSalir,
+export function FamilyCodeScreen({
+  onSave,
+  onSignOut,
 }: {
-  onGuardar: (code: string) => Promise<void>
-  onSalir: () => Promise<void>
+  onSave: (code: string) => Promise<void>
+  onSignOut: () => Promise<void>
 }) {
-  const [codigo, setCodigo] = useState('')
-  const [guardando, setGuardando] = useState(false)
+  const [code, setCode] = useState('')
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  async function guardar(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault()
-    if (!codigo.trim()) return
-    setGuardando(true)
+    if (!code.trim()) return
+    setSaving(true)
     setError('')
     try {
-      await onGuardar(codigo)
+      await onSave(code)
     } catch (err) {
       console.error(err)
       setError('No se pudo guardar el código. Intenta de nuevo.')
     } finally {
-      setGuardando(false)
+      setSaving(false)
     }
   }
 
@@ -90,23 +90,23 @@ export function CodigoFamiliar({
           <code className="text-cyan-700">lopez-navidad</code>). Solo quienes usen el
           mismo código verán sus listas entre sí.
         </p>
-        <form onSubmit={guardar} className="space-y-3 text-left">
+        <form onSubmit={save} className="space-y-3 text-left">
           <input
             type="text"
             required
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
             placeholder="Código de tu familia"
             autoFocus
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-center text-sm outline-none focus:border-cyan-500"
           />
-          <Boton type="submit" disabled={guardando} className="w-full px-6 py-3">
-            {guardando ? 'Guardando…' : 'Entrar a mi familia'}
-          </Boton>
+          <Button type="submit" disabled={saving} className="w-full px-6 py-3">
+            {saving ? 'Guardando…' : 'Entrar a mi familia'}
+          </Button>
           {error && <p className="text-center text-sm text-red-600">{error}</p>}
         </form>
         <button
-          onClick={() => onSalir().catch(console.error)}
+          onClick={() => onSignOut().catch(console.error)}
           className="mt-6 font-mono text-xs text-gray-500 transition-colors hover:text-gray-900"
         >
           Salir

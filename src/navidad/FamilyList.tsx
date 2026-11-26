@@ -1,79 +1,79 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from './auth'
-import { cancelarCompra, escucharComprasDe, escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
-import { familiasDe, type FamilyUser, type Wish } from './types'
+import { cancelPurchase, watchPurchasesOf, watchWishesOf, markWishPurchased, getFamilyMember } from './db'
+import { familiesOf, type FamilyUser, type Wish } from './types'
 import { NavidadShell, WishCard } from './components'
 
-export default function ListaFamiliar() {
+export default function FamilyList() {
   const { uid } = useParams<{ uid: string }>()
-  const { perfil } = useAuth()
-  const [familiar, setFamiliar] = useState<FamilyUser | null>(null)
-  const [deseos, setDeseos] = useState<Wish[]>([])
-  const [compradas, setCompradas] = useState<Set<string>>(new Set())
-  const [cargando, setCargando] = useState(true)
-  const [denegado, setDenegado] = useState(false)
+  const { profile } = useAuth()
+  const [member, setMember] = useState<FamilyUser | null>(null)
+  const [wishes, setWishes] = useState<Wish[]>([])
+  const [purchased, setPurchased] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
+  const [denied, setDenied] = useState(false)
 
-  const misFamilias = familiasDe(perfil)
-  const clave = misFamilias.join(',')
+  const myFamilies = familiesOf(profile)
+  const codesKey = myFamilies.join(',')
   // Si es mi propio link, es mi lista: nunca debo ver qué me compraron.
-  const esMiLista = !!perfil?.uid && perfil.uid === uid
+  const isMyList = !!profile?.uid && profile.uid === uid
 
   useEffect(() => {
-    if (!uid || misFamilias.length === 0) return
-    let activo = true
-    setCargando(true)
-    setDenegado(false)
+    if (!uid || myFamilies.length === 0) return
+    let active = true
+    setLoading(true)
+    setDenied(false)
 
-    obtenerFamiliar(uid)
+    getFamilyMember(uid)
       .then((f) => {
-        if (!activo) return
-        setFamiliar(f)
+        if (!active) return
+        setMember(f)
         // Solo se puede ver si comparte al menos una familia conmigo.
-        if (!f || !familiasDe(f).some((c) => misFamilias.includes(c))) {
-          setDenegado(true)
-          setCargando(false)
+        if (!f || !familiesOf(f).some((c) => myFamilies.includes(c))) {
+          setDenied(true)
+          setLoading(false)
         }
       })
       .catch((e) => {
         console.error(e)
-        if (activo) {
-          setDenegado(true)
-          setCargando(false)
+        if (active) {
+          setDenied(true)
+          setLoading(false)
         }
       })
 
-    const unsub = escucharDeseosDe(
+    const unsub = watchWishesOf(
       uid,
       (d) => {
-        if (!activo) return
-        setDeseos(d)
-        setCargando(false)
+        if (!active) return
+        setWishes(d)
+        setLoading(false)
       },
       (e) => {
         console.error(e)
-        if (activo) {
-          setDenegado(true)
-          setCargando(false)
+        if (active) {
+          setDenied(true)
+          setLoading(false)
         }
       },
     )
     return () => {
-      activo = false
+      active = false
       unsub()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid, clave])
+  }, [uid, codesKey])
 
   // Qué deseos ya fueron comprados (solo si NO es mi propia lista).
   useEffect(() => {
-    setCompradas(new Set())
-    if (!uid || misFamilias.length === 0 || esMiLista) return
-    return escucharComprasDe(uid, setCompradas, (e) => console.error(e))
+    setPurchased(new Set())
+    if (!uid || myFamilies.length === 0 || isMyList) return
+    return watchPurchasesOf(uid, setPurchased, (e) => console.error(e))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid, clave, esMiLista])
+  }, [uid, codesKey, isMyList])
 
-  if (denegado) {
+  if (denied) {
     return (
       <NavidadShell>
         <div className="mx-auto max-w-md py-16 text-center">
@@ -90,7 +90,7 @@ export default function ListaFamiliar() {
     )
   }
 
-  const nombre = familiar?.nombre ?? 'Familiar'
+  const name = member?.name ?? 'Familiar'
 
   return (
     <NavidadShell>
@@ -101,46 +101,46 @@ export default function ListaFamiliar() {
         ← Volver a mi familia
       </Link>
       <div className="mb-6 flex items-center gap-3">
-        {familiar?.foto ? (
+        {member?.photo ? (
           <img
-            src={familiar.foto}
+            src={member.photo}
             alt=""
             referrerPolicy="no-referrer"
             className="h-11 w-11 rounded-full"
           />
         ) : (
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-lg text-gray-700">
-            {nombre.charAt(0)}
+            {name.charAt(0)}
           </span>
         )}
         <div>
-          <h1 className="text-lg font-semibold">Lista de {nombre}</h1>
+          <h1 className="text-lg font-semibold">Lista de {name}</h1>
           <p className="text-xs text-gray-500">Deseos de Navidad 🎄</p>
         </div>
       </div>
 
-      {cargando ? (
+      {loading ? (
         <p className="text-sm text-gray-500">Cargando lista…</p>
-      ) : deseos.length === 0 ? (
+      ) : wishes.length === 0 ? (
         <p className="text-sm text-gray-500">
-          {nombre} todavía no ha agregado nada a su lista.
+          {name} todavía no ha agregado nada a su lista.
         </p>
       ) : (
         <ul className="space-y-3">
-          {deseos.map((w) => (
+          {wishes.map((w) => (
             <WishCard
               key={w.id}
               wish={w}
-              comprado={esMiLista ? false : compradas.has(w.id)}
-              onComprar={
-                esMiLista || misFamilias.length === 0
+              purchased={isMyList ? false : purchased.has(w.id)}
+              onPurchase={
+                isMyList || myFamilies.length === 0
                   ? undefined
-                  : (id) => marcarDeseoComprado(id, w.ownerUid)
+                  : (id) => markWishPurchased(id, w.ownerUid)
               }
-              onCancelar={
-                esMiLista || misFamilias.length === 0
+              onCancel={
+                isMyList || myFamilies.length === 0
                   ? undefined
-                  : (id) => cancelarCompra(id)
+                  : (id) => cancelPurchase(id)
               }
             />
           ))}

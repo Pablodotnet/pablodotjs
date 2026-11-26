@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth'
-import { Bienvenida, Cargando, CodigoFamiliar, ConfigFaltante } from './screens'
-import { familiasDe } from './types'
+import { Welcome, Loading, FamilyCodeScreen, MissingConfig } from './screens'
+import { familiesOf } from './types'
 import NavidadApp from './NavidadApp'
-import ListaFamiliar from './ListaFamiliar'
-import NavidadCuenta from './NavidadCuenta'
+import FamilyList from './FamilyList'
+import NavidadAccount from './NavidadAccount'
 
 // Punto de entrada de la app de Navidad. Se carga de forma diferida (lazy)
 // para que Firebase no pese en la página principal del portafolio.
@@ -18,20 +18,20 @@ export default function NavidadRoot() {
 
 // Controla el acceso: Firebase listo → sesión → código familiar → app.
 function Gate() {
-  const { user, perfil, cargando, firebaseReady, entrarConGoogle, salir, guardarCodigoFamiliar } =
+  const { user, profile, loading, firebaseReady, signInWithGoogle, logOut, saveFamilyCode } =
     useAuth()
 
-  if (!firebaseReady) return <ConfigFaltante />
-  if (cargando) return <Cargando />
-  if (!user) return <Bienvenida onEntrar={entrarConGoogle} />
-  if (familiasDe(perfil).length === 0)
-    return <CodigoFamiliar onGuardar={guardarCodigoFamiliar} onSalir={salir} />
+  if (!firebaseReady) return <MissingConfig />
+  if (loading) return <Loading />
+  if (!user) return <Welcome onSignIn={signInWithGoogle} />
+  if (familiesOf(profile).length === 0)
+    return <FamilyCodeScreen onSave={saveFamilyCode} onSignOut={logOut} />
 
   return (
     <Routes>
       <Route index element={<NavidadApp />} />
-      <Route path="lista/:uid" element={<ListaFamiliar />} />
-      <Route path="cuenta" element={<NavidadCuenta />} />
+      <Route path="lista/:uid" element={<FamilyList />} />
+      <Route path="cuenta" element={<NavidadAccount />} />
     </Routes>
   )
 }

@@ -5,123 +5,105 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
-import { arrayRemove, arrayUnion, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
-import { auth, db, googleProvider, firebaseReady } from '../lib/firebase'
+import { auth, googleProvider, firebaseReady } from '../lib/firebase'
 import type { FamilyUser } from './types'
-import { normalizarCodigo } from './types'
+import {
+  joinFamily,
+  leaveFamily,
+  migrateLegacyFamilyCode,
+  saveBasicProfile,
+  watchProfile,
+} from './db'
 
 interface AuthState {
   user: User | null
-  perfil: FamilyUser | null
-  cargando: boolean
+  profile: FamilyUser | null
+  loading: boolean
   firebaseReady: boolean
-  entrarConGoogle: () => Promise<void>
-  salir: () => Promise<void>
-  guardarCodigoFamiliar: (code: string) => Promise<void>
-  desvincularFamilia: (code: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
+  logOut: () => Promise<void>
+  saveFamilyCode: (code: string) => Promise<void>
+  leaveFamily: (code: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [perfil, setPerfil] = useState<FamilyUser | null>(null)
-  const [cargando, setCargando] = useState(true)
+  const [profile, setProfile] = useState<FamilyUser | null>(null)
+  const [loading, setLoading] = useState(true)
 
   // Sesión de Firebase Auth.
   useEffect(() => {
     if (!firebaseReady) {
-      setCargando(false)
+      setLoading(false)
       return
     }
     return onAuthStateChanged(auth, async (u) => {
       setUser(u)
-      setCargando(false)
+      setLoading(false)
       if (u) {
-        // Guardamos/actualizamos datos básicos (sin tocar el familyCode existente).
         try {
-          await setDoc(
-            doc(db, 'users', u.uid),
-            {
-              uid: u.uid,
-              nombre: u.displayName ?? 'Sin nombre',
-              foto: u.photoURL ?? null,
-              ultimoAcceso: Date.now(),
-            },
-            { merge: true },
-          )
+          await saveBasicProfile(u.uid, u.displayName ?? 'Sin nombre', u.photoURL ?? null)
         } catch (e) {
           console.error('No se pudo guardar el perfil', e)
         }
       } else {
-        setPerfil(null)
+        setProfile(null)
       }
     })
   }, [])
 
-  // Perfil en tiempo real (incluye el código familiar).
+  // Perfil en tiempo real (incluye los códigos familiares).
   useEffect(() => {
     if (!firebaseReady || !user) {
-      setPerfil(null)
+      setProfile(null)
       return
     }
-    return onSnapshot(
-      doc(db, 'users', user.uid),
-      (snap) => {
-        if (!snap.exists()) {
-          setPerfil(null)
-          return
-        }
-        const data = snap.data() as FamilyUser
-        setPerfil(data)
+    return watchProfile(
+      user.uid,
+      (data) => {
+        setProfile(data)
         // Migración del modelo antiguo (familyCode único) al nuevo (familyCodes[]).
-        if (!Array.isArray(data.familyCodes) && data.familyCode) {
-          updateDoc(doc(db, 'users', user.uid), {
-            familyCodes: arrayUnion(normalizarCodigo(data.familyCode)),
-          }).catch((e) => console.error('No se pudo migrar las familias', e))
+        if (data && !Array.isArray(data.familyCodes) && data.familyCode) {
+          migrateLegacyFamilyCode(user.uid, data.familyCode).catch((e) =>
+            console.error('No se pudo migrar las familias', e),
+          )
         }
       },
       (e) => console.error('No se pudo leer el perfil', e),
     )
   }, [user])
 
-  async function entrarConGoogle() {
+  async function signInWithGoogle() {
     await signInWithPopup(auth, googleProvider)
   }
 
-  async function salir() {
+  async function logOut() {
     await signOut(auth)
   }
 
-  // Une al usuario a una familia (aditivo: puede pertenecer a varias).
-  async function guardarCodigoFamiliar(code: string) {
+  async function saveFamilyCode(code: string) {
     if (!user) return
-    const familyCode = normalizarCodigo(code)
-    if (!familyCode) throw new Error('Código inválido')
-    await setDoc(
-      doc(db, 'users', user.uid),
-      { familyCodes: arrayUnion(familyCode) },
-      { merge: true },
-    )
+    await joinFamily(user.uid, code)
   }
 
-  // Quita al usuario de una familia específica.
-  async function desvincularFamilia(code: string) {
+  async function leaveFamilyCode(code: string) {
     if (!user) throw new Error('Debes iniciar sesión.')
-    await updateDoc(doc(db, 'users', user.uid), { familyCodes: arrayRemove(code) })
+    await leaveFamily(user.uid, code)
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        perfil,
-        cargando,
+        profile,
+        loading,
         firebaseReady,
-        entrarConGoogle,
-        salir,
-        guardarCodigoFamiliar,
-        desvincularFamilia,
+        signInWithGoogle,
+        logOut,
+        saveFamilyCode,
+        leaveFamily: leaveFamilyCode,
       }}
     >
       {children}
