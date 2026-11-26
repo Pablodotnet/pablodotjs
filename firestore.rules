@@ -70,7 +70,12 @@ service cloud.firestore {
                     && get(/databases/$(database)/documents/wishes/$(wishId)).data.ownerUid
                        == request.resource.data.ownerUid
                     && request.resource.data.keys().hasOnly(['ownerUid', 'createdAt']);
-      allow update, delete: if false;
+      // Deshacer (por si se marcó por error): puede borrarlo cualquier familiar
+      // que comparta la familia, nunca el dueño (que ni siquiera puede leerlo).
+      allow delete: if request.auth != null
+                    && request.auth.uid != resource.data.ownerUid
+                    && comparteFamilia(resource.data.ownerUid);
+      allow update: if false;
     }
 
     // -------------------------------------------------------------------

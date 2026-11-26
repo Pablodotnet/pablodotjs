@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from './auth'
-import { escucharComprasDe, escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
+import { cancelarCompra, escucharComprasDe, escucharDeseosDe, marcarDeseoComprado, obtenerFamiliar } from './db'
 import { familiasDe, type FamilyUser, type Wish } from './types'
 import { NavidadShell, WishCard } from './components'
 
@@ -136,6 +136,11 @@ export default function ListaFamiliar() {
                 esMiLista || misFamilias.length === 0
                   ? undefined
                   : (id) => marcarDeseoComprado(id, w.ownerUid)
+              }
+              onCancelar={
+                esMiLista || misFamilias.length === 0
+                  ? undefined
+                  : (id) => cancelarCompra(id)
               }
             />
           ))}

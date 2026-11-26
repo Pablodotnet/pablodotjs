@@ -119,11 +119,14 @@ export function WishCard({
   wish,
   onBorrar,
   onComprar,
+  onCancelar,
   comprado = false,
 }: {
   wish: Wish
   onBorrar?: (id: string) => void
   onComprar?: (id: string) => Promise<void>
+  // Deshace la marca de "comprado" (por si alguien la puso por error).
+  onCancelar?: (id: string) => Promise<void>
   // El estado "comprado" viene del padre (colección `compras`), nunca del deseo.
   // En la lista propia del dueño siempre es false: nunca ve qué le compraron.
   comprado?: boolean
@@ -139,6 +142,19 @@ export function WishCard({
       await onComprar(wish.id)
     } catch {
       setError('No se pudo marcar como comprado. Intenta de nuevo.')
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  async function cancelar() {
+    if (!onCancelar || guardando || !comprado) return
+    setGuardando(true)
+    setError('')
+    try {
+      await onCancelar(wish.id)
+    } catch {
+      setError('No se pudo deshacer. Intenta de nuevo.')
     } finally {
       setGuardando(false)
     }
@@ -180,7 +196,20 @@ export function WishCard({
             {wish.url}
           </a>}
           {comprado ? (
-            <p role="status" className="mt-3 text-sm font-medium text-gray-600">✓ Ya se lo compré</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <p role="status" className="text-sm font-medium text-gray-600">✓ Ya se lo compré</p>
+              {onCancelar && (
+                <button
+                  type="button"
+                  onClick={cancelar}
+                  disabled={guardando}
+                  aria-label={`Deshacer: ${wish.titulo} no se ha comprado`}
+                  className="text-xs text-gray-500 underline underline-offset-2 transition-colors hover:text-red-600 disabled:cursor-wait disabled:opacity-50"
+                >
+                  {guardando ? 'Deshaciendo…' : 'Deshacer (fue por error)'}
+                </button>
+              )}
+            </div>
           ) : onComprar && (
             <div className="mt-3">
               <button

@@ -58,6 +58,12 @@ export async function marcarDeseoComprado(wishId: string, ownerUid: string) {
   })
 }
 
+// Deshace la marca de "comprado" (por si se marcó por error). Las reglas sólo
+// permiten borrarla a un familiar que comparta la familia, nunca al dueño.
+export async function cancelarCompra(wishId: string) {
+  await deleteDoc(doc(comprasRef(), wishId))
+}
+
 // Escucha en tiempo real qué deseos de un familiar ya fueron comprados.
 // Devuelve un Set con los ids de los deseos comprados.
 // Las reglas impiden que el dueño lea esto sobre su propia lista.
