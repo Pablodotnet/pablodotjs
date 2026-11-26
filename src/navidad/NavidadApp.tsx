@@ -37,8 +37,23 @@ function MiLista({
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
   const [copia, setCopia] = useState<'idle' | 'copiando' | 'copiado' | 'error'>('idle')
-  const [minimizada, setMinimizada] = useState(false)
+  // Recordamos si la lista estaba minimizada entre visitas (por dispositivo).
+  const [minimizada, setMinimizada] = useState(() => {
+    try {
+      return localStorage.getItem('navidad:miLista:minimizada') === '1'
+    } catch {
+      return false
+    }
+  })
   const miLink = `${window.location.origin}/navidad/lista/${uid}`
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('navidad:miLista:minimizada', minimizada ? '1' : '0')
+    } catch {
+      // localStorage puede no estar disponible (modo privado); no pasa nada.
+    }
+  }, [minimizada])
 
   useEffect(() => {
     if (copia !== 'copiado') return
